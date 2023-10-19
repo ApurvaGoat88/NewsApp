@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:news_project/adapter/hive_adp.dart';
 import 'package:news_project/provider/news_provider.dart';
 import 'package:news_project/screens/new_screen.dart';
 import 'package:news_project/utils/list_env.dart';
@@ -85,6 +87,8 @@ class _BodyState extends State<Body> {
     final w = MediaQuery.sizeOf(context).width;
     final h = MediaQuery.sizeOf(context).height;
     return Consumer<NewsProvider>(builder: (context, value, child) {
+      final boomlist = value.hivelist;
+
       final res = value.news;
       return Scaffold(
         appBar: AppBar(
@@ -307,8 +311,20 @@ class _BodyState extends State<Body> {
                                                           ),
                                                           IconButton(
                                                               onPressed: () {
+                                                                print(value
+                                                                    .hivelist
+                                                                    .length);
                                                                 value.add_list(
                                                                     _news);
+                                                                HiveModel m =
+                                                                    HiveModel(
+                                                                        news:
+                                                                            _news,
+                                                                        id: _news
+                                                                            .id!);
+
+                                                                value
+                                                                    .addTask(_news.id,m);
                                                               },
                                                               icon: const Icon(Icons
                                                                   .bookmark_add_rounded),

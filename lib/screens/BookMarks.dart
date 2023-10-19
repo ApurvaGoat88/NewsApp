@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:news_project/provider/news_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -23,8 +24,9 @@ class _BookMarksState extends State<BookMarks> {
   Key key = Key("5");
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<NewsProvider>(context);
     return Consumer<NewsProvider>(builder: (context, value, child) {
-      final _bm = value.list;
+      final boomlist = provider.hivelist;
 
       final res = value.news;
 
@@ -44,16 +46,16 @@ class _BookMarksState extends State<BookMarks> {
         ),
         body: Container(
           height: h * 0.9,
-          child: _bm.length == 0
-              ? Center(
+          child: boomlist.length ==0 ?
+              Center(
                   child: Text(
-                    "BooksMarks is Empty",
+                    "BookMarks is Empty",
                     style:
                         GoogleFonts.poppins(fontSize: 28, color: Colors.grey),
                   ),
                 )
               : ListView.builder(
-                  itemCount: _bm.length,
+                  itemCount: boomlist.length,
                   itemBuilder: (context, index) {
                     final _news = res.news![index];
                     return Dismissible(
@@ -85,7 +87,7 @@ class _BookMarksState extends State<BookMarks> {
                         setState(() {
                           value.list.removeAt(index);
                           value.bookmark[_news] = false;
-                          value.notifyListeners();
+                          // value.notifyListeners();
                         });
                       },
                       child: Card(
@@ -103,7 +105,7 @@ class _BookMarksState extends State<BookMarks> {
                                     Container(
                                         width: w * 0.6,
                                         child: Text(
-                                          _bm[index].title.toString(),
+                                          boomlist[index].news.title.toString(),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 3,
                                           style: GoogleFonts.poppins(),
@@ -128,8 +130,7 @@ class _BookMarksState extends State<BookMarks> {
                                                 size: 20,
                                               ),
                                           fit: BoxFit.cover,
-                                          imageUrl:
-                                              _bm[index].image.toString()),
+                                          imageUrl: boomlist[index].news.image.toString()),
                                     )
                                   ],
                                 )),
@@ -137,7 +138,7 @@ class _BookMarksState extends State<BookMarks> {
                         ),
                       ),
                     );
-                  }),
+                  })
         ),
       );
     });
