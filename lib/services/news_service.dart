@@ -4,14 +4,14 @@ import 'package:news_project/model/news_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-final DateTime now = DateTime.now();
+final DateTime now = DateTime.now().subtract(Duration(days: 1));
 final DateFormat formatter = DateFormat('yyyy-MM-dd');
 final String formatted = formatter.format(now);
 
 class NewsRepo {
   Future<NewsModel> _fetch_news(String text) async {
     String url =
-        'https://api.worldnewsapi.com/search-news?api-key=672f1383972041fda178cc7cc9040175&text=${text}&earliest-publish-date=2023-10-15';
+        'https://api.worldnewsapi.com/search-news?api-key=2afb76085b5f486aaec73d1b09da7902&text=${text}&earliest-publish-date=$formatted';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

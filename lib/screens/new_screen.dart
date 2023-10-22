@@ -31,6 +31,7 @@ class _NewsScreenState extends State<NewsScreen> {
           ),
         ),
         body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Container(
             child: Center(
               child: Column(

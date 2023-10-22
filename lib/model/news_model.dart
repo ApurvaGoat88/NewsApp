@@ -1,3 +1,5 @@
+import 'package:news_project/Adaptors/hive_adp.dart';
+
 class NewsModel {
   int? offset;
   int? number;
@@ -80,5 +82,19 @@ class News {
     data['source_country'] = this.sourceCountry;
     data['sentiment'] = this.sentiment;
     return data;
+  }
+  factory News.fromNewsAdp(NewsModelAdp news) {
+    return News(
+      id: news.id,
+      title: news.title,
+      text: news.text,
+      url: news.url,
+      image: news.image,
+      publishDate: news.publishDate,
+      author: news.author,
+      language: news.language,
+      sourceCountry: news.sourceCountry,
+      sentiment: news.sentiment,
+    );
   }
 }

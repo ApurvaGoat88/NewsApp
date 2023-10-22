@@ -32,64 +32,83 @@ class _ListView33State extends State<ListView33> {
           ? Center(
               child: Container(
               height: h * 0.14,
-              child: const SpinKitDualRing(
-                color: Colors.orange,
-                size: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Getting Latest News',
+                    style: GoogleFonts.ubuntu(),
+                  ),
+                  SizedBox(width: w * 0.04),
+                  const SpinKitDualRing(
+                    color: Colors.orange,
+                    size: 20,
+                  ),
+                ],
               ),
             ))
           : Padding(
               padding: EdgeInsets.symmetric(horizontal: w * 0.02),
               child: Center(
                 child: Container(
-                  height: h * 0.2,
+                  height: h * 01.8,
                   child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
+                      scrollDirection: Axis.vertical,
                       itemCount: res.number,
+                      physics: NeverScrollableScrollPhysics(),
+                      // shrinkWrap: true,
+                      // physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (cotext, index) {
                         final _news = res.news![index];
-                        return Center(
-                          child: Card(
-                            elevation: 10,
-                            child: Column(
-                              children: [
-                                Container(
-                                    height: h * 0.15,
-                                    color: Colors.grey.shade200,
-                                    margin: EdgeInsets.all(10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                            width: w * 0.5,
-                                            child: Text(
-                                              _news.title.toString(),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 3,
-                                              style: GoogleFonts.poppins(),
-                                            )),
-                                        Container(
-                                          height: h * 0.5,
-                                          width: w * 0.25,
-                                          child: CachedNetworkImage(
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  const SpinKitFoldingCube(
-                                                    color: Colors.orange,
-                                                    size: 20,
-                                                  ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(
-                                                        Icons
-                                                            .error_outline_outlined,
-                                                        color: Colors.orange,
-                                                      ),
-                                              imageUrl: _news.image.toString()),
-                                        )
-                                      ],
-                                    )),
-                              ],
+                        return InkWell(
+                          onTap: () {
+                            print(index);
+                          },
+                          child: Center(
+                            child: Card(
+                              elevation: 10,
+                              child: Column(
+                                children: [
+                                  Container(
+                                      height: h * 0.15,
+                                      color: Colors.grey.shade200,
+                                      margin: EdgeInsets.all(10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                              width: w * 0.5,
+                                              child: Text(
+                                                _news.title.toString(),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 3,
+                                                style: GoogleFonts.poppins(),
+                                              )),
+                                          Container(
+                                            height: h * 0.5,
+                                            width: w * 0.25,
+                                            child: CachedNetworkImage(
+                                                fit: BoxFit.cover,
+                                                placeholder: (context, url) =>
+                                                    const SpinKitFoldingCube(
+                                                      color: Colors.orange,
+                                                      size: 20,
+                                                    ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(
+                                                          Icons
+                                                              .error_outline_outlined,
+                                                          color: Colors.orange,
+                                                        ),
+                                                imageUrl:
+                                                    _news.image.toString()),
+                                          )
+                                        ],
+                                      )),
+                                ],
+                              ),
                             ),
                           ),
                         );

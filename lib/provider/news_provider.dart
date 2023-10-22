@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:news_project/Adaptors/hive_adp.dart';
 import 'package:news_project/model/news_model.dart';
+import 'package:news_project/services/dbService.dart';
 import 'package:news_project/services/news_service.dart';
 
 class NewsProvider extends ChangeNotifier {
@@ -13,21 +17,31 @@ class NewsProvider extends ChangeNotifier {
   Map<News, bool> bookmark = {};
   Map<News, bool> get _bookmark => bookmark;
   // List<NewsModel> get _bookmark => bookmark ;
+
+  final DBService _dbService = DBService();
+  DBService get dbService => _dbService;
+  late List<NewsModelAdp> _hiveList = _dbService.getlist();
+  List<NewsModelAdp> get hivelist => _hiveList;
   int count = 0;
   List<News> list = [];
   List<News> get _list => list;
 
   int get _count => _count;
-  void add_list(News news) {
-    if (bookmark[news] == false || bookmark[news] == null) {
-      list.add(news);
-      bookmark[news] = true;
+  void add_list(int? ind, News news) {
+    final newsAdp = NewsModelAdp.fromNews(news);
+    if (hivelist.contains(newsAdp)) {
+      print(('yessss'));
+      dbService.deletelist(ind);
       notifyListeners();
     } else {
-      list.remove(news);
-      bookmark[news] = false;
+      print('No');
+      dbService.addList(ind, newsAdp);
       notifyListeners();
     }
+
+    print('hivelist: ${hivelist.length}');
+    print('list: $list');
+    notifyListeners();
   }
 
   Future<NewsModel> get_news(String text) async {
@@ -45,5 +59,4 @@ class NewsProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  
 }
