@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_project/provider/news_provider.dart';
+import 'package:news_project/screens/LoginPage.dart';
 // import 'package:news_project/screens/homepage.dart';
 import 'package:news_project/utils/navbar.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +20,7 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final h = MediaQuery.sizeOf(context).height;
+    // final h = MediaQuery.sizeOf(context).height;
     return Scaffold(
       body: StreamBuilder(
           stream: Connectivity().onConnectivityChanged,
@@ -101,8 +103,9 @@ class _StartPageState extends State<StartPage> {
               } else {
                 return Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('INternet Not available '),
+                      Text('Internet Not available '),
                       ElevatedButton(
                           onPressed: () async {
                             ConnectivityResult result =
@@ -115,11 +118,11 @@ class _StartPageState extends State<StartPage> {
                 );
               }
             } else {
-              return Center(
-                child: CircularProgressIndicator(
-                  color: Colors.orange,
-                ),
-              );
+              return const Center(
+                  child: SpinKitFoldingCube(
+                color: Colors.orange,
+                size: 40,
+              ));
             }
           }),
     );

@@ -4,7 +4,7 @@ import 'package:news_project/model/news_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-final DateTime now = DateTime.now().subtract(Duration(days: 1));
+final DateTime now = DateTime.now().subtract(Duration(days: 2));
 final DateFormat formatter = DateFormat('yyyy-MM-dd');
 final String formatted = formatter.format(now);
 

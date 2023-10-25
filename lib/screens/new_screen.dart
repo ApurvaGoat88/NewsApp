@@ -47,9 +47,6 @@ class _NewsScreenState extends State<NewsScreen> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const Divider(
-                    color: Colors.black,
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
@@ -71,9 +68,6 @@ class _NewsScreenState extends State<NewsScreen> {
                         ),
                       ),
                     ),
-                  ),
-                  const Divider(
-                    color: Colors.black,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),

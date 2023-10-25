@@ -51,6 +51,10 @@ dependencies:
   connectivity_plus: ^5.0.1
   hive_flutter: ^1.1.0
   hive: ^2.2.3
+  firebase_auth: ^4.12.0
+  firebase_core: ^2.20.0
+  google_sign_in: ^6.1.5
+  flutter_switch: ^0.3.2
 
 dev_dependencies:
   flutter_test:

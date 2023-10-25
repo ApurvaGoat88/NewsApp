@@ -27,7 +27,7 @@ void main(List<String> args) async {
   print(Hive.isBoxOpen('BookMark'));
   print(Hive.box<NewsModelAdp>('BookMark').values.length.toString());
   // Hive.box<NewsModelAdp>('BookMark').clear();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -73,3 +73,4 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+

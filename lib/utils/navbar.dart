@@ -37,7 +37,7 @@ class _RootPageState extends State<RootPage> {
   Widget _body() => SizedBox.expand(
         child: IndexedStack(
           index: _currentIndex,
-          children: const <Widget>[Body(), BookMarks(), PAge3(), Page4()],
+          children: const <Widget>[Body(), BookMarks(), ProfilePage()],
         ),
       );
 
@@ -62,14 +62,8 @@ class _RootPageState extends State<RootPage> {
               inactiveColor: Colors.black,
               activeBackgroundColor: Colors.white),
           BottomNavBarItem(
-              title: 'Message',
-              icon: const Icon(Icons.chat_bubble),
-              inactiveColor: Colors.black,
-              activeColor: Colors.orange,
-              activeBackgroundColor: Colors.white),
-          BottomNavBarItem(
-              title: 'Settings',
-              icon: const Icon(Icons.settings),
+              title: 'Profile',
+              icon: const Icon(Icons.person),
               inactiveColor: Colors.black,
               activeColor: Colors.orange,
               activeBackgroundColor: Colors.white),
@@ -77,28 +71,14 @@ class _RootPageState extends State<RootPage> {
       );
 }
 
-class PAge3 extends StatefulWidget {
-  const PAge3({super.key});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
   @override
-  State<PAge3> createState() => _PAge3State();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _PAge3State extends State<PAge3> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class Page4 extends StatefulWidget {
-  const Page4({super.key});
-
-  @override
-  State<Page4> createState() => _Page4State();
-}
-
-class _Page4State extends State<Page4> {
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();

@@ -61,86 +61,91 @@ class _BookMarksState extends State<BookMarks> {
                     physics: BouncingScrollPhysics(),
                     itemCount: _bm.length,
                     itemBuilder: (context, index) {
-                      return Dismissible(
-                        key: UniqueKey(),
-                        background: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(left: w * 0.1),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.delete,
-                                    color: Colors.grey,
-                                    size: 40,
+                      return InkWell(
+                        onTap: () {
+                          print('object');
+                        },
+                        child: Dismissible(
+                          key: UniqueKey(),
+                          background: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(left: w * 0.1),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.delete,
+                                      color: Colors.grey,
+                                      size: 40,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(colors: [
+                              Colors.red.shade100,
+                              Colors.white,
+                            ])),
                           ),
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: [
-                            Colors.red.shade100,
-                            Colors.white,
-                          ])),
-                        ),
-                        direction: DismissDirection.startToEnd,
-                        onDismissed: (direction) {
-                          print(_bm[index].id);
-                          setState(() {
-                            value.deleteFromBookmark(_bm[index].id);
-                          });
+                          direction: DismissDirection.startToEnd,
+                          onDismissed: (direction) {
+                            print(_bm[index].id);
+                            setState(() {
+                              value.deleteFromBookmark(_bm[index].id);
+                            });
 
-                          // value.notifyListeners();
-                        },
-                        child: Card(
-                          elevation: 10,
-                          child: Column(
-                            children: [
-                              Container(
-                                  height: h * 0.15,
-                                  color: Colors.grey.shade200,
-                                  margin: const EdgeInsets.all(10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                          width: w * 0.6,
-                                          child: Text(
-                                            _bm[index].title.toString(),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 3,
-                                            style: GoogleFonts.poppins(),
-                                          )),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(
-                                                color: Colors.black)),
-                                        height: h * 0.5,
-                                        width: w * 0.25,
-                                        child: CachedNetworkImage(
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(
-                                                      Icons.error_outline,
-                                                      color: Colors.red,
-                                                      size: 30,
-                                                    ),
-                                            placeholder: (context, url) =>
-                                                const SpinKitCircle(
-                                                  color: Colors.orange,
-                                                  size: 20,
-                                                ),
-                                            fit: BoxFit.cover,
-                                            imageUrl:
-                                                _bm[index].image.toString()),
-                                      )
-                                    ],
-                                  )),
-                            ],
+                            // value.notifyListeners();
+                          },
+                          child: Card(
+                            elevation: 10,
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: h * 0.15,
+                                    color: Colors.grey.shade200,
+                                    margin: const EdgeInsets.all(10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                            width: w * 0.6,
+                                            child: Text(
+                                              _bm[index].title.toString(),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 3,
+                                              style: GoogleFonts.poppins(),
+                                            )),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Colors.black)),
+                                          height: h * 0.5,
+                                          width: w * 0.25,
+                                          child: CachedNetworkImage(
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(
+                                                        Icons.error_outline,
+                                                        color: Colors.red,
+                                                        size: 30,
+                                                      ),
+                                              placeholder: (context, url) =>
+                                                  const SpinKitCircle(
+                                                    color: Colors.orange,
+                                                    size: 20,
+                                                  ),
+                                              fit: BoxFit.cover,
+                                              imageUrl:
+                                                  _bm[index].image.toString()),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
                           ),
                         ),
                       );
