@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -8,67 +9,12 @@ import 'package:news_project/Adaptors/hive_adp.dart';
 import 'package:news_project/provider/Bookmarkprovider.dart';
 import 'package:news_project/provider/news_provider.dart';
 import 'package:news_project/screens/new_screen.dart';
+import 'package:news_project/screens/startpage.dart';
 import 'package:news_project/services/dbService.dart';
 import 'package:news_project/utils/list_env.dart';
 import 'package:news_project/utils/listview.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  String text = '';
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<NewsProvider>(context, listen: false).get_news(text);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          foregroundColor: Colors.black,
-          leading:
-              IconButton(onPressed: () {}, icon: const Icon(Icons.category)),
-          backgroundColor: Colors.white,
-          title: Container(
-            alignment: Alignment.center,
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.location_on,
-                  color: Colors.red,
-                ),
-                Text('Delhi,India')
-              ],
-            ),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.person,
-                ))
-          ],
-        ),
-        body: const Body(),
-      ),
-    );
-  }
-}
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -80,6 +26,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
   TextEditingController _controller = TextEditingController();
   late final AnimationController _cont;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _value = false;
   bool theme = false;
   @override
@@ -123,6 +70,18 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
               style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold, color: Colors.black),
             ),
+            actions: [
+              IconButton(
+                  onPressed: () async {
+                    await _auth.signOut();
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => StartPage()));
+                  },
+                  icon: Icon(
+                    Icons.logout_rounded,
+                    color: Colors.black,
+                  ))
+            ],
           ),
           body: SingleChildScrollView(
             physics: BouncingScrollPhysics(),

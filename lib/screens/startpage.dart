@@ -22,6 +22,17 @@ class _StartPageState extends State<StartPage> {
     final w = MediaQuery.sizeOf(context).width;
     // final h = MediaQuery.sizeOf(context).height;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.grey.shade600,
+        elevation: 1,
+        centerTitle: true,
+        title: Text(
+          'News ToDay',
+          style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+      ),
       body: StreamBuilder(
           stream: Connectivity().onConnectivityChanged,
           builder: (context, AsyncSnapshot<ConnectivityResult> snapshot) {
@@ -83,7 +94,7 @@ class _StartPageState extends State<StartPage> {
                                 Provider.of<NewsProvider>(context,
                                         listen: false)
                                     .get_news('india');
-                                Get.off(RootPage());
+                                Get.off(LoginPage());
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.orange),

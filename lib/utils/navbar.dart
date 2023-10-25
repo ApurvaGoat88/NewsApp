@@ -1,4 +1,5 @@
 import 'package:bottom_nav_bar/bottom_nav_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:news_project/main.dart';
 import 'package:news_project/provider/news_provider.dart';
@@ -21,7 +22,7 @@ class _RootPageState extends State<RootPage> {
   void initState() {
     super.initState();
   }
-
+final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Consumer<NewsProvider>(

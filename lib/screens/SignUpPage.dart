@@ -1,26 +1,27 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:news_project/screens/SignUpPage.dart';
+import 'package:news_project/screens/LoginPage.dart';
 import 'package:news_project/screens/homepage.dart';
 import 'package:news_project/utils/navbar.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   bool _obs = true;
+  bool _obs2 = true;
   final _email = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final black = Colors.black;
-  final orange = Color(0xFFFA800F);
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final orange = const Color(0xFFFA800F);
+  final _cpass = TextEditingController();
+  final _name = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
   Future<void> _handleGoogleSignIn() async {
@@ -45,40 +46,42 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _signInWithEmailAndPassword() async {
+  // final _email = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final _pass = TextEditingController();
+  Future<void> _registerWithEmailAndPassword() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final UserCredential userCredential =
-            await _auth.signInWithEmailAndPassword(
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
           email: _email.text,
           password: _pass.text,
         );
-        final User? user = userCredential.user;
-        print(user!.email.toString());
-        // User logged in successfully, you can navigate to another screen.
-      } catch (e) {
+        User? user = userCredential.user;
+        print(user!.toString());
+        // User account created successfully.
+      } on FirebaseAuthException catch (e) {
         print(e.toString());
       }
     }
   }
 
-  // final _email = TextEditingController();
-  final _pass = TextEditingController();
-
+  @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
     final h = MediaQuery.sizeOf(context).height;
     return Scaffold(
-      backgroundColor: Color(0xFFFA800F),
+      backgroundColor: const Color(0xFFFA800F),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Container(
           height: h,
           width: w,
           decoration: const BoxDecoration(
               image: DecorationImage(
                   image: AssetImage(
-                    'assets/Android Large - 1.png',
+                    'assets/Android Large - 1 (1).png',
                   ),
                   fit: BoxFit.cover)),
           child: Container(
@@ -94,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                           margin: EdgeInsets.symmetric(vertical: h * 0.02),
                           child: Container(
                             child: Text(
-                              'Welcome Back',
+                              'Create New Account',
                               style: GoogleFonts.openSans(
                                   fontSize: h * 0.04,
                                   fontWeight: FontWeight.bold,
@@ -105,21 +108,55 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       TextFormField(
                           validator: (text) {
+                            if (text == null || text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Enter a Valid UserName')));
+                              return 'username error';
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: _name,
+                          onSaved: (text) {},
+                          cursorColor: Colors.black,
+                          decoration: InputDecoration(
+                            suffixIcon: const Icon(
+                              Icons.person,
+                              color: Colors.black,
+                            ),
+                            hintText: 'Username',
+                            hintStyle: GoogleFonts.ubuntu(color: black),
+                            labelStyle: GoogleFonts.ubuntu(
+                              color: black,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: black)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: black)),
+                          ),
+                          maxLines: 1),
+                      SizedBox(
+                        height: h * 0.02,
+                      ),
+                      TextFormField(
+                          validator: (text) {
                             if (text == null ||
                                 text.isEmpty ||
-                                text.contains('@') == false) {
+                                !text.contains('@')) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                       content: Text('Enter a Valid Email')));
-                              return 'Email is Not Valid ';
+                              return 'Email error';
+                            } else {
+                              return null;
                             }
-                            return null;
                           },
                           controller: _email,
                           onSaved: (text) {},
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
-                            suffixIcon: Icon(
+                            suffixIcon: const Icon(
                               Icons.email_outlined,
                               color: Colors.black,
                             ),
@@ -142,10 +179,11 @@ class _LoginPageState extends State<LoginPage> {
                             if (text == null ||
                                 text.isEmpty ||
                                 text.length <= 6) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                  content: Text(
-                                      'Password must be more than 6 letters')));
-                              return 'Password Error';
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Password must be more than 6 letters')));
+                              return 'Password';
                             } else {
                               return null;
                             }
@@ -166,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                                   : Icons.remove_red_eye),
                               color: Colors.black,
                             ),
-                            hintText: 'Password',
+                            hintText: 'Create Password',
                             hintStyle: GoogleFonts.ubuntu(color: black),
                             labelStyle: GoogleFonts.ubuntu(
                               color: black,
@@ -177,21 +215,58 @@ class _LoginPageState extends State<LoginPage> {
                                 borderSide: BorderSide(color: black)),
                           ),
                           maxLines: 1),
-                      Row(
-                        children: [
-                          TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                'Forgot Password?',
-                                style: GoogleFonts.ubuntu(),
-                              ))
-                        ],
+                      SizedBox(
+                        height: h * 0.02,
+                      ),
+                      TextFormField(
+                          validator: (text) {
+                            if (text == null ||
+                                text.isEmpty ||
+                                text.length <= 6) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Password must be more than 6 letters')));
+                              return 'Password';
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: _cpass,
+                          obscureText: _obs2,
+                          onSaved: (text) {},
+                          cursorColor: Colors.black,
+                          decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _obs2 = !_obs2;
+                                });
+                              },
+                              icon: Icon(_obs2
+                                  ? Icons.remove_red_eye_outlined
+                                  : Icons.remove_red_eye),
+                              color: Colors.black,
+                            ),
+                            hintText: 'Confirm Password',
+                            hintStyle: GoogleFonts.ubuntu(color: black),
+                            labelStyle: GoogleFonts.ubuntu(
+                              color: black,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: black)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: black)),
+                          ),
+                          maxLines: 1),
+                      SizedBox(
+                        height: h * 0.02,
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          await _signInWithEmailAndPassword();
+                          await _registerWithEmailAndPassword();
                         },
-                        child: Text('LOGIN'),
+                        child: const Text('SIGN UP'),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: orange,
                             elevation: 10,
@@ -203,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: h * 0.02,
                       ),
                       Row(children: <Widget>[
-                        Expanded(child: Divider()),
+                        const Expanded(child: Divider()),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
@@ -211,7 +286,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: GoogleFonts.ubuntu(color: Colors.grey),
                           ),
                         ),
-                        Expanded(child: Divider()),
+                        const Expanded(child: Divider()),
                       ]),
                       SizedBox(
                         height: h * 0.02,
@@ -229,7 +304,7 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Colors.grey.shade50,
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
-                                  BoxShadow(
+                                  const BoxShadow(
                                     color: Colors.grey,
                                     offset: Offset(0.0, 0.50), //(x,y)
                                     blurRadius: 6.0,
@@ -262,7 +337,7 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'New User?',
+                            'Already have an account?',
                             style: GoogleFonts.ubuntu(),
                           ),
                           TextButton(
@@ -270,10 +345,11 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => SignUpPage()));
+                                        builder: (context) =>
+                                            const LoginPage()));
                               },
                               child: Text(
-                                'Create new account',
+                                'Login here',
                                 style: GoogleFonts.ubuntu(
                                     decoration: TextDecoration.underline),
                               ))
