@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:news_project/screens/SignUpPage.dart';
-import 'package:news_project/screens/homepage.dart';
-import 'package:news_project/utils/navbar.dart';
+import 'package:news_project/Features/LoginPage/Screens/SignUpPage.dart';
+import 'package:news_project/Features/HomePage/Screens/homepage.dart';
+import 'package:news_project/Features/HomePage/Screens/navbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
-  Future<void> _handleGoogleSignIn() async {
+  Future<User?> _handleGoogleSignIn() async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -38,10 +38,13 @@ class _LoginPageState extends State<LoginPage> {
         final UserCredential authResult =
             await FirebaseAuth.instance.signInWithCredential(credential);
         final User? user = authResult.user;
+
         print('User signed in with Google: ${user!.displayName}');
+        return user;
       }
-    } catch (error) {
-      print('Google Sign-In Error: $error');
+    } on FirebaseAuthException catch (error) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 
@@ -218,11 +221,14 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       InkWell(
                           onTap: () async {
-                            await _handleGoogleSignIn();
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RootPage()));
+                            var user = await _handleGoogleSignIn();
+
+                            if (user != null) {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RootPage()));
+                            }
                           },
                           child: Container(
                             decoration: BoxDecoration(

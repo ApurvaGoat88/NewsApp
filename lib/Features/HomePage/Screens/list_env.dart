@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:news_project/provider/env_news.dart';
+import 'package:news_project/Features/HomePage/Provider/env_news.dart';
 import 'package:provider/provider.dart';
 
 class ListView33 extends StatefulWidget {
@@ -40,8 +40,8 @@ class _ListView33State extends State<ListView33> {
                     style: GoogleFonts.ubuntu(),
                   ),
                   SizedBox(width: w * 0.04),
-                  const SpinKitDualRing(
-                    color: Colors.orange,
+                  const SpinKitWanderingCubes(
+                    color: Colors.black,
                     size: 20,
                   ),
                 ],
@@ -79,11 +79,16 @@ class _ListView33State extends State<ListView33> {
                                         children: [
                                           Container(
                                               width: w * 0.5,
-                                              child: Text(
-                                                _news.title.toString(),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 3,
-                                                style: GoogleFonts.poppins(),
+                                              child: Padding(
+                                                padding:
+                                                    EdgeInsets.all(w * .05),
+                                                child: Text(
+                                                  _news.title.toString(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 3,
+                                                  style: GoogleFonts.poppins(),
+                                                ),
                                               )),
                                           Container(
                                             height: h * 0.5,

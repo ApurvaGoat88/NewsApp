@@ -1,11 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:news_project/provider/news_provider.dart';
-import 'package:news_project/screens/LoginPage.dart';
+import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
+import 'package:news_project/Features/LoginPage/Screens/LoginPage.dart';
 // import 'package:news_project/screens/homepage.dart';
-import 'package:news_project/utils/navbar.dart';
+import 'package:news_project/Features/HomePage/Screens/navbar.dart';
 import 'package:provider/provider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
@@ -17,6 +18,8 @@ class StartPage extends StatefulWidget {
 }
 
 class _StartPageState extends State<StartPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -94,7 +97,16 @@ class _StartPageState extends State<StartPage> {
                                 Provider.of<NewsProvider>(context,
                                         listen: false)
                                     .get_news('india');
-                                Get.off(LoginPage());
+                                Get.off(StreamBuilder(
+                                  stream: _auth.authStateChanges(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return RootPage();
+                                    } else {
+                                      return LoginPage();
+                                    }
+                                  },
+                                ));
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.orange),

@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:news_project/screens/LoginPage.dart';
-import 'package:news_project/screens/homepage.dart';
-import 'package:news_project/utils/navbar.dart';
+import 'package:news_project/Features/LoginPage/Screens/LoginPage.dart';
+import 'package:news_project/Features/HomePage/Screens/homepage.dart';
+import 'package:news_project/Features/HomePage/Screens/navbar.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -35,14 +37,27 @@ class _SignUpPageState extends State<SignUpPage> {
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
         );
+
         // Sign in to Firebase with the Google credentials
         final UserCredential authResult =
             await FirebaseAuth.instance.signInWithCredential(credential);
         final User? user = authResult.user;
         print('User signed in with Google: ${user!.displayName}');
+        try {
+          await FirebaseFirestore.instance
+              .collection("Users")
+              .doc(user.email)
+              .set({
+            'name ': user.displayName,
+            'email': user.email.toString(),
+            'bio': 'empty',
+          });
+        } catch (e) {
+          print('$e');
+        }
       }
-    } catch (error) {
-      print('Google Sign-In Error: $error');
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -50,7 +65,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final _pass = TextEditingController();
-  Future<void> _registerWithEmailAndPassword() async {
+  Future<User?> _registerWithEmailAndPassword() async {
     if (_formKey.currentState!.validate()) {
       try {
         UserCredential userCredential =
@@ -58,8 +73,22 @@ class _SignUpPageState extends State<SignUpPage> {
           email: _email.text,
           password: _pass.text,
         );
+        try {
+          await FirebaseFirestore.instance
+              .collection("Users")
+              .doc(userCredential.user!.email)
+              .set({
+            'name ': _name.text,
+            'email': _email.text,
+            'bio': 'empty',
+          });
+        } catch (e) {
+          print('$e');
+        }
+
         User? user = userCredential.user;
         print(user!.toString());
+        return user;
         // User account created successfully.
       } on FirebaseAuthException catch (e) {
         print(e.toString());
@@ -147,7 +176,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text('Enter a Valid Email')));
-                              return 'Email error';
+                              return '';
                             } else {
                               return null;
                             }
@@ -183,7 +212,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   const SnackBar(
                                       content: Text(
                                           'Password must be more than 6 letters')));
-                              return 'Password';
+                              return '';
                             } else {
                               return null;
                             }
@@ -227,7 +256,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   const SnackBar(
                                       content: Text(
                                           'Password must be more than 6 letters')));
-                              return 'Password';
+                              return '';
                             } else {
                               return null;
                             }
@@ -264,7 +293,18 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          await _registerWithEmailAndPassword();
+                          if (_cpass.text == _pass.text) {
+                            var user = await _registerWithEmailAndPassword();
+                            if (user != null) {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RootPage()));
+                            } else {}
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text('Passwords is not Same')));
+                          }
                         },
                         child: const Text('SIGN UP'),
                         style: ElevatedButton.styleFrom(
@@ -293,11 +333,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       InkWell(
                           onTap: () async {
-                            await _handleGoogleSignIn();
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RootPage()));
+                            await _handleGoogleSignIn().then((value) =>
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => RootPage())));
                           },
                           child: Container(
                             decoration: BoxDecoration(

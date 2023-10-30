@@ -1,4 +1,6 @@
-import 'package:news_project/Adaptors/hive_adp.dart';
+
+
+import 'package:news_project/Features/Hive/hive_adp.dart';
 
 class NewsModel {
   int? offset;

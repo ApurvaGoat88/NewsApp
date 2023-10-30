@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:news_project/Adaptors/hive_adp.dart';
-import 'package:news_project/model/news_model.dart';
+import 'package:news_project/Features/Hive/hive_adp.dart';
+
+import 'package:news_project/Model/news_model.dart';
 
 class BookmarkProvider extends ChangeNotifier {
   Box<NewsModelAdp> _box = Hive.box<NewsModelAdp>('BookMark');
@@ -12,7 +13,7 @@ class BookmarkProvider extends ChangeNotifier {
   void add_bookmark(News news) {
     if (_box.containsKey(news.id)) {
       deleteFromBookmark(news.id);
-      notifyListeners();
+
       print(_box.keys);
     } else {
       _box.put(news.id, NewsModelAdp.fromNews(news));

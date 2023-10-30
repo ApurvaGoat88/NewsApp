@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:news_project/Features/Boomarks/Services/dbService.dart';
 import 'package:news_project/Features/Hive/hive_adp.dart';
-import 'package:news_project/Features/News%20Page/Services/news_service.dart';
-
 import 'package:news_project/Model/news_model.dart';
+import 'package:news_project/Features/Boomarks/Services/dbService.dart';
+import 'package:news_project/Features/News%20Page/Services/news_service.dart';
 
 class NewsProvider extends ChangeNotifier {
   final _service = NewsService();

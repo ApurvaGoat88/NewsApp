@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:news_project/model/news_model.dart';
-import 'package:news_project/services/news_service.dart';
+import 'package:news_project/Model/news_model.dart';
+import 'package:news_project/Features/News%20Page/Services/news_service.dart';
 
-class ListProvider extends ChangeNotifier {
+class EnvProvider extends ChangeNotifier {
   final _service = NewsService();
   bool isLoading = false;
   NewsModel _news = NewsModel();

@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:news_project/Adaptors/hive_adp.dart';
-import 'package:news_project/provider/Bookmarkprovider.dart';
-import 'package:news_project/provider/news_provider.dart';
-import 'package:news_project/services/dbService.dart';
+
+import 'package:news_project/Features/Boomarks/Providers/Bookmarkprovider.dart';
+import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
+import 'package:news_project/Features/Boomarks/Services/dbService.dart';
 import 'package:provider/provider.dart';
 
 class BookMarks extends StatefulWidget {

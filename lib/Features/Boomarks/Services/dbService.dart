@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:news_project/Adaptors/hive_adp.dart';
+import 'package:news_project/Features/Hive/hive_adp.dart';
 
 class DBService {
   var box = Hive.box<NewsModelAdp>('BookMark');

@@ -2,21 +2,22 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:news_project/Features/HomePage/Provider/list_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:news_project/provider/news_provider.dart';
+import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
 
-class NewsScreen extends StatefulWidget {
-  const NewsScreen({super.key, required this.index});
+class NewsScreenofList extends StatefulWidget {
+  const NewsScreenofList({super.key, required this.index});
   final index;
 
   @override
-  State<NewsScreen> createState() => _NewsScreenState();
+  State<NewsScreenofList> createState() => _NewsScreenofListState();
 }
 
-class _NewsScreenState extends State<NewsScreen> {
+class _NewsScreenofListState extends State<NewsScreenofList> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<NewsProvider>(builder: (context, value, child) {
+    return Consumer<ListProvider>(builder: (context, value, child) {
       final res = value.news;
       final h = MediaQuery.sizeOf(context).height;
       final w = MediaQuery.sizeOf(context).width;
@@ -61,7 +62,11 @@ class _NewsScreenState extends State<NewsScreen> {
                               Icons.error_outline,
                               color: Colors.red,
                             ),
-                            placeholder: (context, url) => SpinKitCircle(),
+                            placeholder: (context, url) =>
+                                SpinKitWanderingCubes(
+                              color: Colors.black,
+                              size: 40,
+                            ),
                             imageUrl: res.news![widget.index].image.toString(),
                             fit: BoxFit.cover,
                           ),
