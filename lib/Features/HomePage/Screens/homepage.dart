@@ -6,6 +6,7 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:news_project/Features/Boomarks/Providers/Bookmarkprovider.dart';
 import 'package:news_project/Features/Comments/Widget/commentlist.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
@@ -50,80 +51,140 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
     'Business',
     'Science & Tech'
   ];
+
   void addComment(int? id, String comments, user) async {
-    final currentList = FirebaseFirestore.instance
+    getComments(id).then((value) {
+      print(value);
+      value.add({'comment': comments, 'user': user});
+      print(value);
+      CommentsModel commentsModel = CommentsModel(comments: value);
+      FirebaseFirestore.instance
+          .collection('Comments')
+          .doc(id.toString())
+          .set({'comments': value}).then((value) =>
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Comment added, Please refreash'))));
+
+      print('done');
+    });
+  }
+
+  Future<List<dynamic>> getComments(int? id) async {
+    final collection = await FirebaseFirestore.instance
         .collection('Comments')
         .doc(id.toString())
         .get();
-    print(currentList);
-    CommentsModel commentsModel = CommentsModel(id: id, comments: []);
-    try {
-      await FirebaseFirestore.instance
-          .collection('Comments')
-          .doc(id.toString())
-          .set(commentsModel.toJson());
-    } catch (e) {
-      print('$e');
-    }
+    final commentlist = collection.get('comments') as List<dynamic>;
+
+    return commentlist;
   }
 
   void _showSheet(h, w, int? id) {
-    showBottomSheet(
-      elevation: 20,
-      context: context,
-      builder: (context) {
-        return Container(
-          height: h * 0.6,
-          width: w,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: h * .01),
-                child: Container(
-                  width: w * 0.08,
-                  height: h * 0.008,
-                  decoration: BoxDecoration(
-                      color: Colors.grey.shade500,
-                      borderRadius: BorderRadius.circular(23)),
+    final collection = FirebaseFirestore.instance.collection('Comments').get();
+
+    getComments(id).then((value) {
+      showBottomSheet(
+        elevation: 20,
+        context: context,
+        builder: (context) {
+          print(value.length);
+          return Container(
+            height: h * 0.6,
+            width: w,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: h * .01),
+                  child: Container(
+                    width: w * 0.08,
+                    height: h * 0.008,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade500,
+                        borderRadius: BorderRadius.circular(23)),
+                  ),
                 ),
-              ),
-              Text(
-                'Comments',
-                style: GoogleFonts.ubuntu(fontSize: h * 0.03),
-              ),
-              const Divider(
-                color: Colors.black,
-              ),
-              Container(
-                color: Colors.red,
-                height: h * 0.42,
-                child: CommentList(),
-              ),
-              const Divider(
-                color: Colors.black,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: w * 0.01),
-                child: TextField(
-                  controller: _comment,
-                  decoration: InputDecoration(
-                      suffixIconColor: Colors.black,
-                      hintText: 'Type your opinion',
-                      focusColor: Colors.black,
-                      hoverColor: Colors.black,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(23)),
-                      suffixIcon: IconButton(
-                          onPressed: () => addComment(
-                              id, _comment.text, user!.displayName.toString()),
-                          icon: Icon(Icons.send_rounded))),
+                Text(
+                  'Comments',
+                  style: GoogleFonts.ubuntu(fontSize: h * 0.03),
                 ),
-              )
-            ],
-          ),
-        );
-      },
-    );
+                const Divider(
+                  color: Colors.black,
+                ),
+                Container(
+                    // color: Colors.red,
+                    height: h * 0.42,
+                    child: ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      itemCount: value.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey.shade200),
+                                borderRadius: BorderRadius.circular(23)),
+                            width: w,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: w * 0.05, vertical: h * 0.004),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        value[index]['user'].toString(),
+                                        style: GoogleFonts.ubuntu(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    width: w,
+                                    alignment: Alignment.centerLeft,
+                                    child: Expanded(
+                                      child: Text(
+                                        value[index]['comment'].toString(),
+                                        style: GoogleFonts.ubuntu(),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )),
+                const Divider(
+                  color: Colors.black,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: w * 0.01),
+                  child: TextField(
+                    controller: _comment,
+                    decoration: InputDecoration(
+                        suffixIconColor: Colors.black,
+                        hintText: 'Type your opinion',
+                        focusColor: Colors.black,
+                        hoverColor: Colors.black,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(23)),
+                        suffixIcon: IconButton(
+                            onPressed: () => addComment(id, _comment.text,
+                                user!.displayName.toString()),
+                            icon: Icon(Icons.send_rounded))),
+                  ),
+                )
+              ],
+            ),
+          );
+        },
+      );
+    });
   }
 
   @override

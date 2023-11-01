@@ -59,7 +59,7 @@ class _NewsScreenofListState extends State<NewsScreenofList> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: CachedNetworkImage(
-                            errorWidget: (context, url, error) => Icon(
+                            errorWidget: (context, url, error) => const Icon(
                               Icons.error_outline,
                               color: Colors.red,
                             ),

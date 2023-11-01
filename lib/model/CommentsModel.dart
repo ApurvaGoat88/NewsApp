@@ -9,21 +9,21 @@ CommentsModel commentsModelFromJson(String str) => CommentsModel.fromJson(json.d
 String commentsModelToJson(CommentsModel data) => json.encode(data.toJson());
 
 class CommentsModel {
-    int? id;
-    List<Comment> comments;
+  
+    List<dynamic> comments;
 
     CommentsModel({
-        required this.id,
+        
         required this.comments,
     });
 
     factory CommentsModel.fromJson(Map<String, dynamic> json) => CommentsModel(
-        id: json["id"],
+      
         comments: List<Comment>.from(json["comments"].map((x) => Comment.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
-        "id": id,
+      
         "comments": List<dynamic>.from(comments.map((x) => x.toJson())),
     };
 }
