@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:news_project/Features/Hive/hive_adp.dart';
@@ -8,15 +9,19 @@ import 'package:news_project/Model/news_model.dart';
 class BookmarkProvider extends ChangeNotifier {
   Box<NewsModelAdp> _box = Hive.box<NewsModelAdp>('BookMark');
   Box<NewsModelAdp> get box => _box;
+  List<News> newsList = [];
+  List<News> get _newsList => newsList;
   late List<NewsModelAdp> _list = getlist();
   List<NewsModelAdp> get list => _list;
   void add_bookmark(News news) {
     if (_box.containsKey(news.id)) {
       deleteFromBookmark(news.id);
-
-      print(_box.keys);
+      newsList.remove(news);
+      print(newsList);
+      // print(_box.keys);
     } else {
       _box.put(news.id, NewsModelAdp.fromNews(news));
+      newsList.add(news);
       addtolist(news);
     }
     notifyListeners();
@@ -24,8 +29,10 @@ class BookmarkProvider extends ChangeNotifier {
 
   void deleteFromBookmark(id) {
     print('delete called');
-    print(id);
+    // print(id);
     _box.delete(id);
+    print(newsList);
+
     // if (index == 0) {
     //   list.clear();
     //   _box.clear();

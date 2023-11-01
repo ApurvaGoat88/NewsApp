@@ -25,7 +25,6 @@ class _RootPageState extends State<RootPage> {
     super.initState();
   }
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Consumer<NewsProvider>(

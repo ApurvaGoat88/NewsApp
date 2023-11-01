@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:news_project/Features/Boomarks/Providers/Bookmarkprovider.dart';
+import 'package:news_project/Features/Boomarks/Screens/FullNewsPage.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
-import 'package:news_project/Features/Boomarks/Services/dbService.dart';
 import 'package:provider/provider.dart';
 
 class BookMarks extends StatefulWidget {
@@ -18,7 +18,6 @@ class BookMarks extends StatefulWidget {
 class _BookMarksState extends State<BookMarks> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Provider.of<NewsProvider>(context, listen: false);
   }
@@ -63,7 +62,9 @@ class _BookMarksState extends State<BookMarks> {
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
-                          print('object');
+                          Get.to(NewsScreenofBookMarks(
+                            index: index,
+                          ));
                         },
                         child: Dismissible(
                           key: UniqueKey(),

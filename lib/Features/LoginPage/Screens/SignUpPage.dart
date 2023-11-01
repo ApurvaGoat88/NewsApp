@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_project/Features/LoginPage/Screens/LoginPage.dart';
 import 'package:news_project/Features/HomePage/Screens/homepage.dart';
 import 'package:news_project/Features/HomePage/Screens/navbar.dart';
+import 'package:news_project/model/UserModel.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -26,7 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
-  Future<void> _handleGoogleSignIn() async {
+  Future<void> _handleGoogleSignIn(UserModel usermodel) async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -48,9 +49,13 @@ class _SignUpPageState extends State<SignUpPage> {
               .collection("Users")
               .doc(user.email)
               .set({
-            'name ': user.displayName,
-            'email': user.email.toString(),
-            'bio': 'empty',
+            "username": user.displayName,
+            "followings": 0,
+            "followers": 0,
+            "email": user.email,
+            "bio": "",
+            "allFollowings": [],
+            "allFollowers": [],
           });
         } catch (e) {
           print('$e');
@@ -65,7 +70,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final _pass = TextEditingController();
-  Future<User?> _registerWithEmailAndPassword() async {
+  Future<User?> _registerWithEmailAndPassword(UserModel useree) async {
     if (_formKey.currentState!.validate()) {
       try {
         UserCredential userCredential =
@@ -77,11 +82,7 @@ class _SignUpPageState extends State<SignUpPage> {
           await FirebaseFirestore.instance
               .collection("Users")
               .doc(userCredential.user!.email)
-              .set({
-            'name ': _name.text,
-            'email': _email.text,
-            'bio': 'empty',
-          });
+              .set(useree.toJson());
         } catch (e) {
           print('$e');
         }
@@ -294,7 +295,15 @@ class _SignUpPageState extends State<SignUpPage> {
                       ElevatedButton(
                         onPressed: () async {
                           if (_cpass.text == _pass.text) {
-                            var user = await _registerWithEmailAndPassword();
+                            var user = await _registerWithEmailAndPassword(
+                                UserModel(
+                                    bio: 'null',
+                                    email: _email.text,
+                                    followers: 0,
+                                    followings: 0,
+                                    username: _name.text,
+                                    allFollowers: [],
+                                    allFollowings: []));
                             if (user != null) {
                               Navigator.pushReplacement(
                                   context,
@@ -333,8 +342,15 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       InkWell(
                           onTap: () async {
-                            await _handleGoogleSignIn().then((value) =>
-                                Navigator.pushReplacement(
+                            await _handleGoogleSignIn(UserModel(
+                                    bio: '',
+                                    email: '',
+                                    followers: 0,
+                                    followings: 0,
+                                    username: _name.text,
+                                    allFollowers: [],
+                                    allFollowings: []))
+                                .then((value) => Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => RootPage())));

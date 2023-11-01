@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,12 +7,14 @@ import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_project/Features/Boomarks/Providers/Bookmarkprovider.dart';
+import 'package:news_project/Features/Comments/Widget/commentlist.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
 import 'package:news_project/Features/News%20Page/Screens/new_screen.dart';
 import 'package:news_project/Features/LoginPage/Screens/startpage.dart';
 import 'package:news_project/Features/Boomarks/Services/dbService.dart';
 import 'package:news_project/Features/HomePage/Screens/list_env.dart';
 import 'package:news_project/Features/HomePage/Screens/listview.dart';
+import 'package:news_project/model/CommentsModel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -27,6 +30,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
   TextEditingController _controller = TextEditingController();
   late final AnimationController _cont;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final user = FirebaseAuth.instance.currentUser;
   bool _value = false;
   bool theme = false;
   @override
@@ -36,6 +40,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
     _cont = AnimationController(vsync: this);
   }
 
+  final _comment = TextEditingController();
   String cate = 'India';
   final List<String> _cate = [
     'India',
@@ -45,11 +50,87 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
     'Business',
     'Science & Tech'
   ];
+  void addComment(int? id, String comments, user) async {
+    final currentList = FirebaseFirestore.instance
+        .collection('Comments')
+        .doc(id.toString())
+        .get();
+    print(currentList);
+    CommentsModel commentsModel = CommentsModel(id: id, comments: []);
+    try {
+      await FirebaseFirestore.instance
+          .collection('Comments')
+          .doc(id.toString())
+          .set(commentsModel.toJson());
+    } catch (e) {
+      print('$e');
+    }
+  }
+
+  void _showSheet(h, w, int? id) {
+    showBottomSheet(
+      elevation: 20,
+      context: context,
+      builder: (context) {
+        return Container(
+          height: h * 0.6,
+          width: w,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: h * .01),
+                child: Container(
+                  width: w * 0.08,
+                  height: h * 0.008,
+                  decoration: BoxDecoration(
+                      color: Colors.grey.shade500,
+                      borderRadius: BorderRadius.circular(23)),
+                ),
+              ),
+              Text(
+                'Comments',
+                style: GoogleFonts.ubuntu(fontSize: h * 0.03),
+              ),
+              const Divider(
+                color: Colors.black,
+              ),
+              Container(
+                color: Colors.red,
+                height: h * 0.42,
+                child: CommentList(),
+              ),
+              const Divider(
+                color: Colors.black,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: w * 0.01),
+                child: TextField(
+                  controller: _comment,
+                  decoration: InputDecoration(
+                      suffixIconColor: Colors.black,
+                      hintText: 'Type your opinion',
+                      focusColor: Colors.black,
+                      hoverColor: Colors.black,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(23)),
+                      suffixIcon: IconButton(
+                          onPressed: () => addComment(
+                              id, _comment.text, user!.displayName.toString()),
+                          icon: Icon(Icons.send_rounded))),
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
     final h = MediaQuery.sizeOf(context).height;
+
     return Consumer<NewsProvider>(builder: (context, value, child) {
       final res = value.news;
 
@@ -253,7 +334,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                                       ),
                                                     ),
                                                     Consumer<BookmarkProvider>(
-                                                      builder: (context, value,
+                                                      builder: (context, value2,
                                                           child) {
                                                         return Row(
                                                           mainAxisAlignment:
@@ -261,38 +342,23 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                                                   .spaceAround,
                                                           children: [
                                                             IconButton(
-                                                              onPressed: () {},
-                                                              icon: const Icon(
-                                                                  Icons
-                                                                      .favorite),
-                                                            ),
-                                                            IconButton(
-                                                              onPressed: () {
-                                                                showBottomSheet(
-                                                                  elevation: 20,
-                                                                  context:
-                                                                      context,
-                                                                  builder:
-                                                                      (context) {
-                                                                    return Container(
-                                                                      height: h *
-                                                                          0.6,
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
+                                                              onPressed: () =>
+                                                                  _showSheet(
+                                                                      h,
+                                                                      w,
+                                                                      _news.id),
                                                               icon: const Icon(
                                                                   Icons
                                                                       .comment),
                                                             ),
                                                             IconButton(
                                                               onPressed: () {
-                                                                value
+                                                                value2
                                                                     .add_bookmark(
                                                                         _news);
                                                                 setState(() {});
                                                               },
-                                                              icon: value.box
+                                                              icon: value2.box
                                                                       .containsKey(
                                                                           _news
                                                                               .id)

@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_project/Features/LoginPage/Screens/startpage.dart';
+import 'package:news_project/model/UserModel.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -40,7 +41,8 @@ class _ProfilePageState extends State<ProfilePage> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              final userdata = snapshot.data!.data() as Map<String, dynamic>;
+              final userdata = UserModel.fromJson(
+                  snapshot.data!.data() as Map<String, dynamic>);
               return Container(
                 height: h,
                 width: w,
@@ -51,12 +53,31 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Container(
                       margin: EdgeInsets.only(top: h * 0.03),
-                      child: CircleAvatar(
-                        radius: h * .09,
-                        backgroundImage:
-                            NetworkImage(currentUser!.photoURL.toString()),
-                        backgroundColor: Colors.white,
-                        // child: Icon(Icons.person),
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                
+                                child: Center(
+                                  child: CircleAvatar(
+                                    radius: h * 0.2,
+                                    backgroundImage: NetworkImage(
+                                        currentUser!.photoURL.toString()),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: h * .09,
+                          backgroundImage:
+                              NetworkImage(currentUser!.photoURL.toString()),
+                          backgroundColor: Colors.white,
+                          // child: Icon(Icons.person),
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -65,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       children: [
                         Text(
-                          currentUser!.displayName.toString(),
+                          userdata.username,
                           style: GoogleFonts.ubuntu(
                               fontWeight: FontWeight.bold, fontSize: h * 0.036),
                         ),
@@ -73,7 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: h * 0.01,
                         ),
                         Text(
-                          currentUser!.email.toString(),
+                          userdata.email,
                           style:
                               GoogleFonts.ubuntu(color: Colors.grey.shade700),
                         ),
@@ -86,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: w * 0.85,
                           child: Expanded(
                             child: Text(
-                              'Flutter Developer  |  Football  | Student at Ajay Kumar garg Engineering College | Prayagraj </>',
+                              userdata.bio,
                               style: GoogleFonts.ubuntu(color: Colors.grey),
                               maxLines: null,
                             ),
@@ -130,7 +151,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '200K',
+                                      userdata.followers.toString(),
                                       style: GoogleFonts.ubuntu(
                                           color: Colors.orange,
                                           fontWeight: FontWeight.bold,
@@ -152,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '100',
+                                      userdata.followings.toString(),
                                       style: GoogleFonts.ubuntu(
                                           fontSize: h * 0.04,
                                           fontWeight: FontWeight.bold,

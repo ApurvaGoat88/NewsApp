@@ -3,11 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_project/Features/Hive/hive_adp.dart';
-
 import 'package:news_project/Features/LoginPage/Service/firebase_options.dart';
 import 'package:news_project/Features/Boomarks/Providers/Bookmarkprovider.dart';
 import 'package:news_project/Features/HomePage/Provider/env_news.dart';
-
 import 'package:news_project/Features/HomePage/Provider/list_provider.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
 import 'package:news_project/Features/LoginPage/Screens/startpage.dart';

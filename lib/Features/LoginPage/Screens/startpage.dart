@@ -31,7 +31,7 @@ class _StartPageState extends State<StartPage> {
         elevation: 1,
         centerTitle: true,
         title: Text(
-          'News ToDay',
+          'News Today',
           style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold, color: Colors.black),
         ),
