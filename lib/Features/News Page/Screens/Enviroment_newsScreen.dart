@@ -7,15 +7,15 @@ import 'package:news_project/Features/HomePage/Provider/list_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
 
-class NewsScreenofList extends StatefulWidget {
-  const NewsScreenofList({super.key, required this.index});
+class NewsScreenofEnv extends StatefulWidget {
+  const NewsScreenofEnv({super.key, required this.index});
   final index;
 
   @override
-  State<NewsScreenofList> createState() => _NewsScreenofListState();
+  State<NewsScreenofEnv> createState() => _NewsScreenofEnvState();
 }
 
-class _NewsScreenofListState extends State<NewsScreenofList> {
+class _NewsScreenofEnvState extends State<NewsScreenofEnv> {
   @override
   Widget build(BuildContext context) {
     return Consumer<EnvProvider>(builder: (context, value, child) {
@@ -74,6 +74,36 @@ class _NewsScreenofListState extends State<NewsScreenofList> {
                         ),
                       ),
                     ),
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Text(
+                          'Source -',
+                          style: GoogleFonts.poppins(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(),
+                        child: Text(
+                          res.news![widget.index].author.toString() +
+                              ',' +
+                              res.news![widget.index].sourceCountry
+                                  .toString()
+                                  .toUpperCase(),
+                          style: GoogleFonts.poppins(
+                              color: Colors.blue,
+                              fontSize: 20,
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),

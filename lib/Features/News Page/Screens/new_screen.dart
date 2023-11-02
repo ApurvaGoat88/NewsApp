@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -72,6 +74,36 @@ class _NewsScreenState extends State<NewsScreen> {
                         ),
                       ),
                     ),
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Text(
+                          'Source -',
+                          style: GoogleFonts.poppins(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(),
+                        child: Text(
+                          res.news![widget.index].author.toString() +
+                              ',' +
+                              res.news![widget.index].sourceCountry
+                                  .toString()
+                                  .toUpperCase(),
+                          style: GoogleFonts.poppins(
+                              color: Colors.blue,
+                              fontSize: 20,
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),

@@ -88,6 +88,7 @@ class _SignUpPageState extends State<SignUpPage> {
         }
 
         User? user = userCredential.user;
+        
         print(user!.toString());
         return user;
         // User account created successfully.

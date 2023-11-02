@@ -59,12 +59,11 @@ class _ProfilePageState extends State<ProfilePage> {
                             context: context,
                             builder: (context) {
                               return Container(
-                                
                                 child: Center(
                                   child: CircleAvatar(
                                     radius: h * 0.2,
                                     backgroundImage: NetworkImage(
-                                        currentUser!.photoURL.toString()),
+                                        currentUser!.photoURL.toString() ),
                                   ),
                                 ),
                               );
@@ -86,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       children: [
                         Text(
-                          userdata.username,
+                          userdata.email.split('@')[0].toString(),
                           style: GoogleFonts.ubuntu(
                               fontWeight: FontWeight.bold, fontSize: h * 0.036),
                         ),

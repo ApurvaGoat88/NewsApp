@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:news_project/Features/Hive/hive_adp.dart';
 import 'package:news_project/Features/LoginPage/Service/firebase_options.dart';
@@ -33,7 +34,8 @@ void main(List<String> args) async {
   );
 
   // Hive.box<NewsModelAdp>('BookMark').clear();
-  runApp(const MyApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((value) => runApp(const MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -59,7 +61,8 @@ class _MyAppState extends State<MyApp> {
             create: (context) => ListProvider()),
         ChangeNotifierProvider<BookmarkProvider>(
             create: (context) => BookmarkProvider()),
-        ChangeNotifierProvider<EnvProvider>(create: (context) => EnvProvider())
+        ChangeNotifierProvider<EnvProvider>(create: (context) => EnvProvider()),
+         ChangeNotifierProvider<AstroProvider>(create: (context) => AstroProvider())
       ], // Create and provide the NewsProvider
       child: GetMaterialApp(
           debugShowCheckedModeBanner: false,

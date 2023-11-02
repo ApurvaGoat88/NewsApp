@@ -10,6 +10,7 @@ import 'package:http/http.dart';
 import 'package:news_project/Features/Boomarks/Providers/Bookmarkprovider.dart';
 import 'package:news_project/Features/Comments/Widget/commentlist.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
+import 'package:news_project/Features/HomePage/Screens/Astrolist.dart';
 import 'package:news_project/Features/News%20Page/Screens/new_screen.dart';
 import 'package:news_project/Features/LoginPage/Screens/startpage.dart';
 import 'package:news_project/Features/Boomarks/Services/dbService.dart';
@@ -143,18 +144,18 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                           itemCount: value.length,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: const EdgeInsets.all(10.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
                               child: Container(
                                 decoration: BoxDecoration(
                                     color: Colors.white,
                                     border:
                                         Border.all(color: Colors.grey.shade200),
-                                    borderRadius: BorderRadius.circular(23)),
+                                    borderRadius: BorderRadius.circular(5)),
                                 width: w,
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: w * 0.05,
-                                      vertical: h * 0.004),
+                                      horizontal: w * 0.05, vertical: h * 0.00),
                                   child: Column(
                                     children: [
                                       Row(
@@ -203,7 +204,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                 borderRadius: BorderRadius.circular(23)),
                             suffixIcon: IconButton(
                                 onPressed: () => addComment(id, _comment.text,
-                                    user!.displayName.toString()),
+                                    user!.email!.split('@')[0].toString()),
                                 icon: Icon(Icons.send_rounded))),
                       ),
                     )
@@ -263,8 +264,10 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(23)),
                           suffixIcon: IconButton(
-                              onPressed: () => addCommentifNULL(id,
-                                  _comment.text, user!.displayName.toString()),
+                              onPressed: () => addCommentifNULL(
+                                  id,
+                                  _comment.text,
+                                  user!.email!.split('@')[0].toString()),
                               icon: Icon(Icons.send_rounded))),
                     ),
                   )
@@ -596,6 +599,16 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     const ListView33(),
+                    Container(
+                      child: Text(
+                        'Astrology',
+                        style: GoogleFonts.kanit(
+                            color: const Color.fromARGB(255, 23, 21, 21),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30),
+                      ),
+                    ),
+                    const ListView4(),
                   ],
                 ),
               ),

@@ -2,22 +2,23 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:news_project/Features/HomePage/Provider/env_news.dart';
 import 'package:news_project/Features/HomePage/Provider/list_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
 
-class NewsScreenofList extends StatefulWidget {
-  const NewsScreenofList({super.key, required this.index});
+class NewsScreenofAstro extends StatefulWidget {
+  const NewsScreenofAstro({super.key, required this.index});
   final index;
 
   @override
-  State<NewsScreenofList> createState() => _NewsScreenofListState();
+  State<NewsScreenofAstro> createState() => _NewsScreenofAstroState();
 }
 
-class _NewsScreenofListState extends State<NewsScreenofList> {
+class _NewsScreenofAstroState extends State<NewsScreenofAstro> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ListProvider>(builder: (context, value, child) {
+    return Consumer<AstroProvider>(builder: (context, value, child) {
       final res = value.news;
       final h = MediaQuery.sizeOf(context).height;
       final w = MediaQuery.sizeOf(context).width;

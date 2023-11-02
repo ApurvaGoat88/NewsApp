@@ -4,22 +4,23 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_project/Features/HomePage/Provider/env_news.dart';
+import 'package:news_project/Features/News%20Page/Screens/AstroScreen.dart';
 import 'package:news_project/Features/News%20Page/Screens/Enviroment_newsScreen.dart';
 import 'package:provider/provider.dart';
 
-class ListView33 extends StatefulWidget {
-  const ListView33({super.key});
+class ListView4 extends StatefulWidget {
+  const ListView4({super.key});
 
   @override
-  State<ListView33> createState() => _ListView33State();
+  State<ListView4> createState() => _ListView4State();
 }
 
-class _ListView33State extends State<ListView33> {
+class _ListView4State extends State<ListView4> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<EnvProvider>(context, listen: false).get_list('Environment');
+      Provider.of<AstroProvider>(context, listen: false).get_list('Astrology');
     });
   }
 
@@ -27,7 +28,7 @@ class _ListView33State extends State<ListView33> {
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
     final h = MediaQuery.sizeOf(context).height;
-    return Consumer<EnvProvider>(builder: (context, value, child) {
+    return Consumer<AstroProvider>(builder: (context, value, child) {
       final res = value.news;
 
       return value.isLoading
@@ -64,7 +65,7 @@ class _ListView33State extends State<ListView33> {
                         final _news = res.news![index];
                         return InkWell(
                           onTap: () {
-                            Get.to(NewsScreenofEnv(index: index));
+                            Get.to(NewsScreenofAstro(index: index));
                           },
                           child: Center(
                             child: Card(
