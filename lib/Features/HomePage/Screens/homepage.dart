@@ -69,6 +69,27 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
     });
   }
 
+  void addCommentifNULL(int? id, String comments, user) async {
+    FirebaseFirestore.instance.collection('Comments').doc(id.toString()).set({
+      'comments': [
+        {'comment': comments, 'user': user}
+      ]
+    }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Comment added, Please refreash'))));
+  }
+
+  Future<bool> doesDocumentExist(int? id) async {
+    String collectionName = 'Comments';
+    String documentId = id.toString();
+
+    DocumentReference documentReference =
+        FirebaseFirestore.instance.collection(collectionName).doc(documentId);
+
+    DocumentSnapshot documentSnapshot = await documentReference.get();
+
+    return documentSnapshot.exists;
+  }
+
   Future<List<dynamic>> getComments(int? id) async {
     final collection = await FirebaseFirestore.instance
         .collection('Comments')
@@ -80,110 +101,177 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
   }
 
   void _showSheet(h, w, int? id) {
-    final collection = FirebaseFirestore.instance.collection('Comments').get();
+    doesDocumentExist(id).then((value) {
+      print(value);
+      if (value) {
+        final collection =
+            FirebaseFirestore.instance.collection('Comments').get();
 
-    getComments(id).then((value) {
-      showBottomSheet(
-        elevation: 20,
-        context: context,
-        builder: (context) {
-          print(value.length);
-          return Container(
-            height: h * 0.6,
-            width: w,
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: h * .01),
-                  child: Container(
-                    width: w * 0.08,
-                    height: h * 0.008,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade500,
-                        borderRadius: BorderRadius.circular(23)),
-                  ),
-                ),
-                Text(
-                  'Comments',
-                  style: GoogleFonts.ubuntu(fontSize: h * 0.03),
-                ),
-                const Divider(
-                  color: Colors.black,
-                ),
-                Container(
-                    // color: Colors.red,
-                    height: h * 0.42,
-                    child: ListView.builder(
-                      physics: BouncingScrollPhysics(),
-                      itemCount: value.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey.shade200),
-                                borderRadius: BorderRadius.circular(23)),
-                            width: w,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: w * 0.05, vertical: h * 0.004),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+        getComments(id).then((value) {
+          showBottomSheet(
+            elevation: 20,
+            context: context,
+            builder: (context) {
+              print(value.length);
+              return Container(
+                height: h * 0.6,
+                width: w,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: h * .01),
+                      child: Container(
+                        width: w * 0.08,
+                        height: h * 0.008,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade500,
+                            borderRadius: BorderRadius.circular(23)),
+                      ),
+                    ),
+                    Text(
+                      'Comments',
+                      style: GoogleFonts.ubuntu(fontSize: h * 0.03),
+                    ),
+                    const Divider(
+                      color: Colors.black,
+                    ),
+                    Container(
+                        // color: Colors.red,
+                        height: h * 0.42,
+                        child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          itemCount: value.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border:
+                                        Border.all(color: Colors.grey.shade200),
+                                    borderRadius: BorderRadius.circular(23)),
+                                width: w,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: w * 0.05,
+                                      vertical: h * 0.004),
+                                  child: Column(
                                     children: [
-                                      Text(
-                                        value[index]['user'].toString(),
-                                        style: GoogleFonts.ubuntu(
-                                            fontWeight: FontWeight.bold),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            value[index]['user'].toString(),
+                                            style: GoogleFonts.ubuntu(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        width: w,
+                                        alignment: Alignment.centerLeft,
+                                        child: Expanded(
+                                          child: Text(
+                                            value[index]['comment'].toString(),
+                                            style: GoogleFonts.ubuntu(),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  Container(
-                                    width: w,
-                                    alignment: Alignment.centerLeft,
-                                    child: Expanded(
-                                      child: Text(
-                                        value[index]['comment'].toString(),
-                                        style: GoogleFonts.ubuntu(),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    )),
-                const Divider(
-                  color: Colors.black,
+                            );
+                          },
+                        )),
+                    const Divider(
+                      color: Colors.black,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: w * 0.01),
+                      child: TextField(
+                        controller: _comment,
+                        decoration: InputDecoration(
+                            suffixIconColor: Colors.black,
+                            hintText: 'Type your opinion',
+                            focusColor: Colors.black,
+                            hoverColor: Colors.black,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(23)),
+                            suffixIcon: IconButton(
+                                onPressed: () => addComment(id, _comment.text,
+                                    user!.displayName.toString()),
+                                icon: Icon(Icons.send_rounded))),
+                      ),
+                    )
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: w * 0.01),
-                  child: TextField(
-                    controller: _comment,
-                    decoration: InputDecoration(
-                        suffixIconColor: Colors.black,
-                        hintText: 'Type your opinion',
-                        focusColor: Colors.black,
-                        hoverColor: Colors.black,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(23)),
-                        suffixIcon: IconButton(
-                            onPressed: () => addComment(id, _comment.text,
-                                user!.displayName.toString()),
-                            icon: Icon(Icons.send_rounded))),
-                  ),
-                )
-              ],
-            ),
+              );
+            },
           );
-        },
-      );
+        });
+      } else {
+        showBottomSheet(
+          elevation: 20,
+          context: context,
+          builder: (context) {
+            return Container(
+                height: h * 0.6,
+                width: w,
+                child: Column(children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: h * .01),
+                    child: Container(
+                      width: w * 0.08,
+                      height: h * 0.008,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade500,
+                          borderRadius: BorderRadius.circular(23)),
+                    ),
+                  ),
+                  Text(
+                    'Comments',
+                    style: GoogleFonts.ubuntu(fontSize: h * 0.03),
+                  ),
+                  const Divider(
+                    color: Colors.black,
+                  ),
+                  Container(
+                      // color: Colors.red,
+                      height: h * 0.42,
+                      child: Center(
+                        child: Text(
+                          "Become First to add comment ",
+                          style: GoogleFonts.ubuntu(fontSize: 20),
+                        ),
+                      )),
+                  const Divider(
+                    color: Colors.black,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: w * 0.01),
+                    child: TextField(
+                      controller: _comment,
+                      decoration: InputDecoration(
+                          suffixIconColor: Colors.black,
+                          hintText: 'Type your opinion',
+                          focusColor: Colors.black,
+                          hoverColor: Colors.black,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(23)),
+                          suffixIcon: IconButton(
+                              onPressed: () => addCommentifNULL(id,
+                                  _comment.text, user!.displayName.toString()),
+                              icon: Icon(Icons.send_rounded))),
+                    ),
+                  )
+                ]));
+          },
+        );
+      }
     });
   }
 
