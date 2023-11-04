@@ -37,7 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection("Users")
-              .doc(currentUser!.email)
+              .doc(currentUser!.email!.split('@')[0])
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -63,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: CircleAvatar(
                                     radius: h * 0.2,
                                     backgroundImage: NetworkImage(
-                                        currentUser!.photoURL.toString() ),
+                                        currentUser!.photoURL.toString()),
                                   ),
                                 ),
                               );
@@ -150,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      userdata.followers.toString(),
+                                      'we',
                                       style: GoogleFonts.ubuntu(
                                           color: Colors.orange,
                                           fontWeight: FontWeight.bold,
@@ -172,7 +172,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      userdata.followings.toString(),
+                                      'aa',
                                       style: GoogleFonts.ubuntu(
                                           fontSize: h * 0.04,
                                           fontWeight: FontWeight.bold,
@@ -204,11 +204,48 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            await _auth.signOut().whenComplete(() =>
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => StartPage())));
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text(
+                                    'Sign Out now ? ',
+                                    style: GoogleFonts.ubuntu(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  content: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      GestureDetector(
+                                        child: Text(
+                                          "No",
+                                          style: GoogleFonts.ubuntu(
+                                              color: Colors.blue),
+                                        ),
+                                        onTap: () => Navigator.pop(context),
+                                      ),
+                                      GestureDetector(
+                                        child: Text(
+                                          "Yes",
+                                          style: GoogleFonts.ubuntu(
+                                              color: Colors.blue),
+                                        ),
+                                        onTap: () async {
+                                          await _auth.signOut().whenComplete(
+                                              () => Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          StartPage())));
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
                           },
                           child: const Text('Log out'),
                           style: ElevatedButton.styleFrom(

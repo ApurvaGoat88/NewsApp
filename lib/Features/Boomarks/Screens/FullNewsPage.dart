@@ -32,19 +32,7 @@ class _NewsScreenofBookMarksState extends State<NewsScreenofBookMarks> {
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
-            IconButton(
-              onPressed: () {
-                value.add_bookmark(News.fromNewsAdp(list_news[widget.index]));
-                Get.back();
-              },
-              icon: value.box.containsKey(list_news[widget.index].id)
-                  ? const Icon(
-                      Icons.bookmark_added_rounded,
-                      color: Colors.orange,
-                      size: 25,
-                    )
-                  : const Icon(Icons.bookmark_add_outlined),
-            )
+            
           ],
         ),
         body: SingleChildScrollView(

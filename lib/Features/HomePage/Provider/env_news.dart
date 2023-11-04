@@ -52,5 +52,6 @@ class AstroProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+    
   }
 }

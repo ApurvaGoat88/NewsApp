@@ -9,42 +9,29 @@ UserModel userModelFromJson(String str) => UserModel.fromJson(json.decode(str));
 String userModelToJson(UserModel data) => json.encode(data.toJson());
 
 class UserModel {
-    String bio;
-    String email;
-    int followers;
-    int followings;
-    String username;
-    List<dynamic> allFollowers;
-    List<dynamic> allFollowings;
+  String bio;
+  String email;
+  String uid;
+  String username;
 
-    UserModel({
-        required this.bio,
-        required this.email,
-        required this.followers,
-        required this.followings,
-        required this.username,
-        required this.allFollowers,
-        required this.allFollowings,
-    });
+  UserModel({
+    required this.bio,
+    required this.email,
+    required this.username,
+    required this.uid ,
+  });
 
-    factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         bio: json["bio"],
         email: json["email"],
-        followers: json["followers"],
-        followings: json["followings"],
         username: json["username"],
-        allFollowers: List<dynamic>.from(json["allFollowers"].map((x) => x)),
-        allFollowings: List<dynamic>.from(json["allFollowings"].map((x) => x)),
-    );
+        uid: json['uid']
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "bio": bio,
         "email": email,
-        "followers": followers,
-        "followings": followings,
         "username": username,
-        "allFollowers": List<dynamic>.from(allFollowers.map((x) => x)),
-        "allFollowings": List<dynamic>.from(allFollowings.map((x) => x)),
-    };
+        "uid":uid
+      };
 }
-

@@ -16,6 +16,7 @@ import 'package:news_project/Features/LoginPage/Screens/startpage.dart';
 import 'package:news_project/Features/Boomarks/Services/dbService.dart';
 import 'package:news_project/Features/HomePage/Screens/list_env.dart';
 import 'package:news_project/Features/HomePage/Screens/listview.dart';
+import 'package:news_project/Features/Profile/UserProfile.dart';
 import 'package:news_project/model/CommentsModel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -103,6 +104,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
 
   void _showSheet(h, w, int? id) {
     doesDocumentExist(id).then((value) {
+      setState(() {});
       print(value);
       if (value) {
         final collection =
@@ -162,10 +164,17 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            value[index]['user'].toString(),
-                                            style: GoogleFonts.ubuntu(
-                                                fontWeight: FontWeight.bold),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Get.to(UserProfilePage(
+                                                  name: value[index]['user']
+                                                      .toString()));
+                                            },
+                                            child: Text(
+                                              value[index]['user'].toString(),
+                                              style: GoogleFonts.ubuntu(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -203,8 +212,11 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(23)),
                             suffixIcon: IconButton(
-                                onPressed: () => addComment(id, _comment.text,
-                                    user!.email!.split('@')[0].toString()),
+                                onPressed: () {
+                                  addComment(id, _comment.text,
+                                      user!.email!.split('@')[0].toString());
+                                  setState(() {});
+                                },
                                 icon: Icon(Icons.send_rounded))),
                       ),
                     )
@@ -300,6 +312,13 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
             style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold, color: Colors.black),
           ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                },
+                icon: Icon(Icons.abc_sharp))
+          ],
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

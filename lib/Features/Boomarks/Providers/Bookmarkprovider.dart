@@ -26,6 +26,19 @@ class BookmarkProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+  void add_bookmarkfromlist(News news) {
+    if (_box.containsKey(news.id)) {
+      deleteFromBookmark(news.id);
+      newsList.remove(news);
+      print(newsList);
+      // print(_box.keys);
+    } else {
+      _box.put(news.id, NewsModelAdp.fromNews(news));
+      newsList.add(news);
+      addtolist(news);
+    }
+    notifyListeners();
+  }
 
   void deleteFromBookmark(id) {
     print('delete called');

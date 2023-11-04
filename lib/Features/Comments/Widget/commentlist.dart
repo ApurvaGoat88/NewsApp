@@ -12,8 +12,8 @@ class CommentList extends StatefulWidget {
 
 int list_size = 0;
 var listtt = [];
-Future<List<Comment>> getComments(int? id)  async{
-  final collection =  await FirebaseFirestore.instance
+Future<List<Comment>> getComments(int? id) async {
+  final collection = await FirebaseFirestore.instance
       .collection('Comments')
       .doc(id.toString())
       .get();
@@ -49,6 +49,7 @@ class _CommentListState extends State<CommentList> {
   void initState() {
     super.initState();
     getComments(widget.identity);
+    setState(() {});
   }
 
   @override

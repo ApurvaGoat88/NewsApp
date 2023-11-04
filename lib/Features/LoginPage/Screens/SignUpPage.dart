@@ -47,15 +47,12 @@ class _SignUpPageState extends State<SignUpPage> {
         try {
           await FirebaseFirestore.instance
               .collection("Users")
-              .doc(user.email)
+              .doc(user.email!.split('@')[0].toString())
               .set({
             "username": user.displayName,
-            "followings": 0,
-            "followers": 0,
+            "uid": user.uid,
             "email": user.email,
             "bio": "",
-            "allFollowings": [],
-            "allFollowers": [],
           });
         } catch (e) {
           print('$e');
@@ -78,17 +75,19 @@ class _SignUpPageState extends State<SignUpPage> {
           email: _email.text,
           password: _pass.text,
         );
+        final result = _auth.currentUser;
+        useree.uid = result!.uid;
         try {
           await FirebaseFirestore.instance
               .collection("Users")
-              .doc(userCredential.user!.email)
+              .doc(userCredential.user!.email!.split('@')[0].toString())
               .set(useree.toJson());
         } catch (e) {
           print('$e');
         }
 
         User? user = userCredential.user;
-        
+
         print(user!.toString());
         return user;
         // User account created successfully.
@@ -296,15 +295,13 @@ class _SignUpPageState extends State<SignUpPage> {
                       ElevatedButton(
                         onPressed: () async {
                           if (_cpass.text == _pass.text) {
-                            var user = await _registerWithEmailAndPassword(
-                                UserModel(
-                                    bio: 'null',
-                                    email: _email.text,
-                                    followers: 0,
-                                    followings: 0,
-                                    username: _name.text,
-                                    allFollowers: [],
-                                    allFollowings: []));
+                            var user =
+                                await _registerWithEmailAndPassword(UserModel(
+                              bio: 'null',
+                              email: _email.text,
+                              uid: '',
+                              username: _name.text,
+                            ));
                             if (user != null) {
                               Navigator.pushReplacement(
                                   context,
@@ -344,17 +341,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       InkWell(
                           onTap: () async {
                             await _handleGoogleSignIn(UserModel(
-                                    bio: '',
-                                    email: '',
-                                    followers: 0,
-                                    followings: 0,
-                                    username: _name.text,
-                                    allFollowers: [],
-                                    allFollowings: []))
-                                .then((value) => Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => RootPage())));
+                              bio: '',
+                              email: '',
+                              uid: '',
+                              username: _name.text,
+                            )).then((value) => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RootPage())));
                           },
                           child: Container(
                             decoration: BoxDecoration(

@@ -11,7 +11,7 @@ final String formatted = formatter.format(now);
 class NewsRepo {
   Future<NewsModel> _fetch_news(String text) async {
     String url =
-        'https://api.worldnewsapi.com/search-news?api-key=ff6792da39c04f109eb4c3f1bd66edf2&text=${text}&earliest-publish-date=$formatted';
+        'https://api.worldnewsapi.com/search-news?api-key=672f1383972041fda178cc7cc9040175&text=${text}&earliest-publish-date=$formatted';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

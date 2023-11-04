@@ -38,7 +38,7 @@ class NewsModelAdp extends HiveObject {
     this.sourceCountry,
     this.sentiment,
   });
-   factory NewsModelAdp.fromNews(News news) {
+  factory NewsModelAdp.fromNews(News news) {
     return NewsModelAdp(
       id: news.id,
       title: news.title,
@@ -50,6 +50,22 @@ class NewsModelAdp extends HiveObject {
       language: news.language,
       sourceCountry: news.sourceCountry,
       sentiment: news.sentiment,
+    );
+  }
+  factory NewsModelAdp.fromNewsModel(NewsModel news, index) {
+    final newss = news.news![index];
+    return NewsModelAdp(
+      id : newss.id,
+      title : newss.title,
+      text : newss.text,
+      url : newss.url,
+      image : newss.image,
+      publishDate : newss.publishDate,
+      author : newss.author,
+      language : newss.language,
+      sourceCountry : newss.sourceCountry,
+      sentiment : newss.sentiment,
+      
     );
   }
 }

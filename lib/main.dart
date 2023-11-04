@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,13 +18,8 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
-
-  // Register the Hive adapter for your NewsModel
   Hive.registerAdapter(NewsModelAdapter());
-
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
-
-  // Open a Hive box for your NewsModel with the specified path
   await Hive.openBox<NewsModelAdp>('BookMark', path: appDocumentDir.path);
   print(Hive.isBoxOpen('BookMark'));
   print(Hive.box<NewsModelAdp>('BookMark').values.length.toString());
