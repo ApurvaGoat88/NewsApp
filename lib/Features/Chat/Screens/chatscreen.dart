@@ -1,20 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_project/Features/Chat/Service/chatservice.dart';
 
 class Chatscreen extends StatefulWidget {
-  const Chatscreen({super.key, required this.Remail, required this.Rid});
+  const Chatscreen(
+      {super.key,
+      required this.Remail,
+      required this.Rid,
+      required this.imgUrl,
+      required this.senderUrl});
   final Remail;
+  final senderUrl;
   final Rid;
+  final imgUrl;
   @override
   State<Chatscreen> createState() => _ChatscreenState();
 }
 
 class _ChatscreenState extends State<Chatscreen> {
+  Future<String?> getImageUrlForUser() async {
+    final em = FirebaseAuth.instance.currentUser!.email.toString();
+
+    final userSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('email', isEqualTo: em)
+        .get();
+
+    if (userSnapshot.docs.isNotEmpty) {
+      final userData = userSnapshot.docs.first.data() as Map<String, dynamic>;
+
+      final imageUrl = userData['imgUrl'] as String?;
+      print(imageUrl);
+      return imageUrl;
+    } else {
+      // Handle the case when the user's document is not found
+      return null;
+    }
+  }
+
   final _messageController = TextEditingController();
   final chatService = ChatService();
   final auth = FirebaseAuth.instance;
@@ -44,7 +72,7 @@ class _ChatscreenState extends State<Chatscreen> {
           ),
           Expanded(
               child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: builderMessage(),
           )),
           input(),
@@ -82,13 +110,14 @@ class _ChatscreenState extends State<Chatscreen> {
     var align = (data['senderId'] == auth.currentUser!.uid)
         ? Alignment.centerRight
         : Alignment.centerLeft;
-    final kk = (data['senderId'] == auth.currentUser!.uid);
-    return Container(
-      alignment: align,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2.0),
+
+    // final kk = (data['senderId'] == auth.currentUser!.uid);
+    print(data['timeStamp'].toString());
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Container(
+        alignment: align,
         child: Column(
-           
           children: [
             // Container(
             //   alignment: align,
@@ -97,25 +126,51 @@ class _ChatscreenState extends State<Chatscreen> {
             //     style: GoogleFonts.ubuntu(color: Colors.black),
             //   ),
             // ),
-            Container(
-                alignment: Alignment.center,
-                width: w * 0.7,
-                decoration: BoxDecoration(
-                    borderRadius: kk
-                        ? BorderRadius.only(
-                            bottomLeft: Radius.circular(23),
-                            topLeft: Radius.circular(23))
-                        : BorderRadius.only(
-                            bottomRight: Radius.circular(23),
-                            topRight: Radius.circular(23)),
-                    color: Colors.orange.shade100),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    data['message'],
-                    style: GoogleFonts.ubuntu(fontSize: 20),
+
+            data['senderId'] == auth.currentUser!.uid
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                          alignment: Alignment.center,
+                          width: w * 0.7,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(23),
+                              color: Colors.orange.shade100),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              data['message'],
+                              style: GoogleFonts.ubuntu(fontSize: 20),
+                            ),
+                          )),
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundImage: NetworkImage(widget.senderUrl),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundImage: NetworkImage(widget.imgUrl),
+                      ),
+                      Container(
+                          alignment: Alignment.center,
+                          width: w * 0.7,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(23),
+                              color: Colors.orange.shade100),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              data['message'],
+                              style: GoogleFonts.ubuntu(fontSize: 20),
+                            ),
+                          )),
+                    ],
                   ),
-                ))
           ],
         ),
       ),

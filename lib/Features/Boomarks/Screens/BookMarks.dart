@@ -111,14 +111,17 @@ class _BookMarksState extends State<BookMarks> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Container(
-                                            width: w * 0.6,
-                                            child: Text(
-                                              _bm[index].title.toString(),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 3,
-                                              style: GoogleFonts.poppins(),
-                                            )),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                              width: w * 0.6,
+                                              child: Text(
+                                                _bm[index].title.toString(),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 3,
+                                                style: GoogleFonts.poppins(),
+                                              )),
+                                        ),
                                         Container(
                                           decoration: BoxDecoration(
                                               color: Colors.white,

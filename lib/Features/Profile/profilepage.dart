@@ -15,9 +15,70 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final _bio = TextEditingController();
+  void showupdateopt() {
+    Get.defaultDialog(
+        title: "Update User Info",
+        content: Container(
+          child: Column(children: [
+            TextField(
+              maxLines: 5,
+              controller: _bio,
+              decoration: InputDecoration(
+                  labelText: "Update Bio",
+                  labelStyle:
+                      GoogleFonts.ubuntu(color: Colors.black, fontSize: 20),
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(),
+                  disabledBorder: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder()),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            // TextField(
+            //     controller: email,
+            //     decoration: InputDecoration(labelText: "Email")),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              width: 100,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(23))),
+                  onPressed: () {
+                    update(_bio.text.toString());
+                  },
+                  child: Text("Save")),
+            )
+          ]),
+        ));
+  }
+
+  void update(String bio) async {
+    final currentUser22 = FirebaseAuth.instance.currentUser;
+
+    final DocumentReference documentRef = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(currentUser22!.email!.split('@')[0].toString());
+
+    // Update specific fields in the document
+    try {
+      await documentRef.update({
+        'bio': bio,
+      });
+      print('Document successfully updated');
+    } catch (e) {
+      print('Error updating document: $e');
+    }
+  }
+
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  final usercollection = FirebaseFirestore.instance.collection('Users');
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -31,6 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
             style:
                 GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
           ),
+
           centerTitle: true,
           // elevation:0,
         ),
@@ -43,221 +105,150 @@ class _ProfilePageState extends State<ProfilePage> {
             if (snapshot.hasData) {
               final userdata = UserModel.fromJson(
                   snapshot.data!.data() as Map<String, dynamic>);
-              return Container(
-                height: h,
-                width: w,
-                color: Colors.grey.shade100,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: h * 0.03),
-                      child: GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                child: Center(
-                                  child: CircleAvatar(
-                                    radius: h * 0.2,
-                                    backgroundImage: NetworkImage(
-                                        userdata.imgUrl.toString()),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: CircleAvatar(
-                          radius: h * .09,
-                          backgroundImage:
-                              NetworkImage(userdata.imgUrl.toString()),
-                          backgroundColor: Colors.white,
-                          // child: Icon(Icons.person),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: h * 0.02,
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          userdata.email.split('@')[0].toString(),
-                          style: GoogleFonts.ubuntu(
-                              fontWeight: FontWeight.bold, fontSize: h * 0.036),
-                        ),
-                        SizedBox(
-                          height: h * 0.01,
-                        ),
-                        Text(
-                          userdata.email,
-                          style:
-                              GoogleFonts.ubuntu(color: Colors.grey.shade700),
-                        ),
-                        SizedBox(
-                          height: h * 0.01,
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(horizontal: h * 0.04),
-                          width: w * 0.85,
-                          child: Expanded(
-                            child: Text(
-                              userdata.bio,
-                              style: GoogleFonts.ubuntu(color: Colors.grey),
-                              maxLines: null,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: h * 0.02,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Container(
+                  height: h * 0.8,
+                  width: w,
+                  color: Colors.grey.shade100,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: h * 0.03),
+                        child: Column(
                           children: [
-                            Card(
-                              elevation: 0,
-                              color: Colors.grey.shade100,
-                              child: Container(
-                                height: h * 0.12,
-                                width: w * 0.3,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '7',
-                                      style: GoogleFonts.ubuntu(
-                                          fontSize: h * 0.04,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.orange),
-                                    ),
-                                    Text('Reading Hours',
-                                        style: GoogleFonts.ubuntu()),
-                                  ],
-                                ),
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Container(
+                                      child: Center(
+                                        child: CircleAvatar(
+                                          radius: h * 0.2,
+                                          backgroundImage: NetworkImage(
+                                              userdata.imgUrl.toString()),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: CircleAvatar(
+                                radius: h * .09,
+                                backgroundImage:
+                                    NetworkImage(userdata.imgUrl.toString()),
+                                backgroundColor: Colors.white,
+                                // child: Icon(Icons.person),
                               ),
                             ),
-                            Card(
-                              elevation: 0,
-                              color: Colors.grey.shade100,
-                              child: Container(
-                                height: h * 0.12,
-                                width: w * 0.3,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'we',
-                                      style: GoogleFonts.ubuntu(
-                                          color: Colors.orange,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: h * 0.04),
-                                    ),
-                                    Text('Followers',
-                                        style: GoogleFonts.ubuntu()),
-                                  ],
-                                ),
-                              ),
+                            SizedBox(
+                              height: h * 0.02,
                             ),
-                            Card(
-                              elevation: 0,
-                              color: Colors.grey.shade100,
-                              child: Container(
-                                height: h * 0.12,
-                                width: w * 0.3,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'aa',
-                                      style: GoogleFonts.ubuntu(
-                                          fontSize: h * 0.04,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.orange),
-                                    ),
-                                    Text('Followings',
-                                        style: GoogleFonts.ubuntu()),
-                                  ],
+                            Text(
+                              userdata.email.split('@')[0].toString(),
+                              style: GoogleFonts.ubuntu(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: h * 0.036),
+                            ),
+                            SizedBox(
+                              height: h * 0.01,
+                            ),
+                            Text(
+                              userdata.email,
+                              style: GoogleFonts.ubuntu(
+                                  color: Colors.grey.shade700),
+                            ),
+                            SizedBox(
+                              height: h * 0.01,
+                            ),
+                            IconButton(
+                                onPressed: () => showupdateopt(),
+                                icon: Icon(Icons.edit)),
+                            Container(
+                              alignment: Alignment.center,
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: h * 0.04),
+                              width: w * 0.85,
+                              child: Expanded(
+                                child: Text(
+                                  userdata.bio,
+                                  style: GoogleFonts.ubuntu(color: Colors.grey),
+                                  maxLines: null,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: h * 0.1,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('Edit Profile'),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange,
-                              elevation: 4,
-                              minimumSize: Size(w * 0.84, h * 0.05),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24))),
-                        ),
-                        SizedBox(
-                          height: h * 0.02,
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text(
-                                    'Sign Out now ? ',
-                                    style: GoogleFonts.ubuntu(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  content: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      GestureDetector(
-                                        child: Text(
-                                          "No",
-                                          style: GoogleFonts.ubuntu(
-                                              color: Colors.blue),
+                      ),
+                      SizedBox(
+                        height: h * 0.02,
+                      ),
+                      SizedBox(
+                        height: h * 0.02,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                      'Sign Out now ? ',
+                                      style: GoogleFonts.ubuntu(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    content: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        GestureDetector(
+                                          child: Text(
+                                            "No",
+                                            style: GoogleFonts.ubuntu(
+                                                color: Colors.blue),
+                                          ),
+                                          onTap: () => Navigator.pop(context),
                                         ),
-                                        onTap: () => Navigator.pop(context),
-                                      ),
-                                      GestureDetector(
-                                        child: Text(
-                                          "Yes",
-                                          style: GoogleFonts.ubuntu(
-                                              color: Colors.blue),
+                                        GestureDetector(
+                                          child: Text(
+                                            "Yes",
+                                            style: GoogleFonts.ubuntu(
+                                                color: Colors.blue),
+                                          ),
+                                          onTap: () async {
+                                            await _auth.signOut().whenComplete(
+                                                () => Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            StartPage())));
+                                          },
                                         ),
-                                        onTap: () async {
-                                          await _auth.signOut().whenComplete(
-                                              () => Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          StartPage())));
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: const Text('Log out'),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange,
-                              elevation: 4,
-                              minimumSize: Size(w * 0.84, h * 0.05),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24))),
-                        ),
-                      ],
-                    )
-                  ],
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: const Text('Log out'),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                elevation: 4,
+                                minimumSize: Size(w * 0.84, h * 0.05),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24))),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               );
             } else {

@@ -15,6 +15,27 @@ class Chatpage extends StatefulWidget {
 }
 
 class _ChatpageState extends State<Chatpage> {
+  var senderUrl;
+  Future<String?> getImageUrlForUser() async {
+    final em = FirebaseAuth.instance.currentUser!.email.toString();
+
+    final userSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('email', isEqualTo: em)
+        .get();
+
+    if (userSnapshot.docs.isNotEmpty) {
+      final userData = userSnapshot.docs.first.data() as Map<String, dynamic>;
+
+      final imageUrl = userData['imgUrl'] as String?;
+      print(imageUrl);
+      return imageUrl;
+    } else {
+      // Handle the case when the user's document is not found
+      return null;
+    }
+  }
+
   String selected = '';
   Map<String, dynamic> cur = {};
   final _auth = FirebaseAuth.instance;
@@ -59,6 +80,8 @@ class _ChatpageState extends State<Chatpage> {
                         : Chatscreen(
                             Remail: cur['email'],
                             Rid: cur['uid'],
+                            imgUrl: cur['imgUrl'],
+                            senderUrl: senderUrl,
                           )),
               ))
             ],
@@ -110,6 +133,10 @@ class _ChatpageState extends State<Chatpage> {
       final email = data['email'].toString();
       return GestureDetector(
         onTap: () {
+          getImageUrlForUser().then((value) {
+            senderUrl = value;
+            print(senderUrl);
+          });
           print(_auth.currentUser!.email.toString() +
               "  " +
               _auth.currentUser!.uid.toString());

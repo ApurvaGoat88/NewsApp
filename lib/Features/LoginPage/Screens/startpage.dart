@@ -7,6 +7,7 @@ import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
 import 'package:news_project/Features/LoginPage/Screens/LoginPage.dart';
 // import 'package:news_project/screens/homepage.dart';
 import 'package:news_project/Features/HomePage/Screens/navbar.dart';
+import 'package:news_project/Features/LoginPage/Screens/SignUpPage.dart';
 import 'package:provider/provider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
@@ -103,7 +104,7 @@ class _StartPageState extends State<StartPage> {
                                     if (snapshot.hasData) {
                                       return RootPage();
                                     } else {
-                                      return LoginPage();
+                                      return SignUpPage();
                                     }
                                   },
                                 ));
