@@ -6,6 +6,7 @@ import 'package:news_project/model/MessageModel.dart';
 class ChatService extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   final _store = FirebaseFirestore.instance;
+  String current = '';
 
   void sendMessage(String Remail, String message) async {
     final currentuserId = _auth.currentUser!.uid;

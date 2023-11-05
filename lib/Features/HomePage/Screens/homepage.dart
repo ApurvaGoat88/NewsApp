@@ -314,8 +314,8 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
           ),
           actions: [
             IconButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
                 },
                 icon: Icon(Icons.abc_sharp))
           ],
@@ -471,7 +471,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                     Positioned(
                                       bottom: h * 0.01,
                                       child: Container(
-                                        height: h * 0.18,
+                                        height: h * 0.2,
                                         width: w * 0.9,
                                         child: Opacity(
                                           opacity: 0.8,
@@ -568,7 +568,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
               ),
               Container(
                 color: const Color.fromARGB(255, 255, 253, 253),
-                height: h * 6,
+                height: h * 6.2,
                 child: Column(
                   children: [
                     Row(

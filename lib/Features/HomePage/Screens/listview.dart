@@ -50,77 +50,80 @@ class _ListView22State extends State<ListView22> {
           : Padding(
               padding: EdgeInsets.symmetric(horizontal: w * 0.02),
               child: Center(
-                child: Container(
-                  height: h * 1.8,
-                  child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: res.number,
-                      physics: NeverScrollableScrollPhysics(),
-                      // shrinkWrap: true,
-                      itemBuilder: (cotext, index) {
-                        final _news = res.news![index];
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        NewsScreenofList(index: index)));
-                          },
-                          child: Center(
-                            child: Card(
-                              elevation: 10,
-                              child: Column(
-                                children: [
-                                  Container(
-                                      height: h * 0.15,
-                                      color: Colors.grey.shade200,
-                                      margin: EdgeInsets.all(10),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                              width: w * 0.5,
-                                              child: Padding(
-                                                padding:
-                                                    EdgeInsets.all(w * .05),
-                                                child: Text(
-                                                  _news.title.toString(),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 3,
-                                                  style: GoogleFonts.poppins(),
-                                                ),
-                                              )),
-                                          Container(
-                                            height: h * 0.5,
-                                            width: w * 0.25,
-                                            child: CachedNetworkImage(
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    const SpinKitFoldingCube(
-                                                      color: Colors.orange,
-                                                      size: 20,
-                                                    ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(
-                                                          Icons
-                                                              .error_outline_outlined,
-                                                          color: Colors.orange,
-                                                        ),
-                                                imageUrl:
-                                                    _news.image.toString()),
-                                          )
-                                        ],
-                                      )),
-                                ],
+                child: Expanded(
+                  child: Container(
+                    height: h * 1.92,
+                    child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: res.number,
+                        physics: NeverScrollableScrollPhysics(),
+                        // shrinkWrap: true,
+                        itemBuilder: (cotext, index) {
+                          final _news = res.news![index];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          NewsScreenofList(index: index)));
+                            },
+                            child: Center(
+                              child: Card(
+                                elevation: 10,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                        height: h * 0.15,
+                                        color: Colors.grey.shade200,
+                                        margin: EdgeInsets.all(10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                                width: w * 0.5,
+                                                child: Padding(
+                                                  padding:
+                                                      EdgeInsets.all(w * .05),
+                                                  child: Text(
+                                                    _news.title.toString(),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 3,
+                                                    style:
+                                                        GoogleFonts.poppins(),
+                                                  ),
+                                                )),
+                                            Container(
+                                              height: h * 0.5,
+                                              width: w * 0.25,
+                                              child: CachedNetworkImage(
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (context, url) =>
+                                                      const SpinKitFoldingCube(
+                                                        color: Colors.orange,
+                                                        size: 20,
+                                                      ),
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(
+                                                        Icons
+                                                            .error_outline_outlined,
+                                                        color: Colors.orange,
+                                                      ),
+                                                  imageUrl:
+                                                      _news.image.toString()),
+                                            )
+                                          ],
+                                        )),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                  ),
                 ),
               ),
             );

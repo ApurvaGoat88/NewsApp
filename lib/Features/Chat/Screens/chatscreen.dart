@@ -35,10 +35,13 @@ class _ChatscreenState extends State<Chatscreen> {
             child: Text(
               widget.Remail.toString().split('@')[0],
               style:
-                  GoogleFonts.ubuntu(fontSize: 23, fontWeight: FontWeight.bold),
+                  GoogleFonts.ubuntu(fontSize: 25, fontWeight: FontWeight.bold),
             ),
           ),
-          Divider(),
+          Divider(
+            height: 20,
+            color: Colors.black,
+          ),
           Expanded(
               child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -85,6 +88,7 @@ class _ChatscreenState extends State<Chatscreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 2.0),
         child: Column(
+           
           children: [
             // Container(
             //   alignment: align,

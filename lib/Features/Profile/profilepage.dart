@@ -63,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: CircleAvatar(
                                     radius: h * 0.2,
                                     backgroundImage: NetworkImage(
-                                        currentUser!.photoURL.toString()),
+                                        userdata.imgUrl.toString()),
                                   ),
                                 ),
                               );
@@ -73,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: CircleAvatar(
                           radius: h * .09,
                           backgroundImage:
-                              NetworkImage(currentUser!.photoURL.toString()),
+                              NetworkImage(userdata.imgUrl.toString()),
                           backgroundColor: Colors.white,
                           // child: Icon(Icons.person),
                         ),

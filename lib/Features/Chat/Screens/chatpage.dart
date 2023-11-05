@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_project/Features/Chat/Screens/chatscreen.dart';
+import 'package:news_project/Features/Chat/Service/chatservice.dart';
 
 class Chatpage extends StatefulWidget {
   const Chatpage({super.key});
@@ -44,8 +45,9 @@ class _ChatpageState extends State<Chatpage> {
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(
-                            blurRadius: 5,
-                          )
+                              blurRadius: 5,
+                              spreadRadius: 1,
+                              color: Colors.grey.shade500)
                         ],
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(25),
@@ -108,14 +110,14 @@ class _ChatpageState extends State<Chatpage> {
       final email = data['email'].toString();
       return GestureDetector(
         onTap: () {
-          // print(select);
           print(_auth.currentUser!.email.toString() +
               "  " +
               _auth.currentUser!.uid.toString());
           print(email + 'as');
           cur = data;
-          select = email;
-          print(cur);
+          // ChatService().current = email;
+          // ChatService().notifyListeners();
+          print(email + "++ " + ChatService().current);
           setState(() {});
         },
         child: Padding(
@@ -129,12 +131,10 @@ class _ChatpageState extends State<Chatpage> {
               children: [
                 CircleAvatar(
                   radius: 35,
-                  backgroundColor:
-                      select == email ? Colors.orange : Colors.grey.shade200,
-                  child: Icon(
-                    Icons.person_2,
-                    color: Colors.black,
-                  ),
+                  backgroundColor: ChatService().current == email
+                      ? Colors.orange
+                      : Colors.grey.shade200,
+                  backgroundImage: NetworkImage(data['imgUrl'].toString()),
                 ),
                 Text(
                   email.split('@')[0].toString().toLowerCase(),

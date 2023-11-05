@@ -2,12 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_project/Features/LoginPage/Screens/LoginPage.dart';
 import 'package:news_project/Features/HomePage/Screens/homepage.dart';
 import 'package:news_project/Features/HomePage/Screens/navbar.dart';
 import 'package:news_project/model/UserModel.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -17,6 +20,7 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  String imgUrl = '';
   bool _obs = true;
   bool _obs2 = true;
   final _email = TextEditingController();
@@ -53,6 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
             "uid": user.uid,
             "email": user.email,
             "bio": "",
+            'imgUrl': user.photoURL.toString()
           });
         } catch (e) {
           print('$e');
@@ -64,7 +69,44 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   // final _email = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Future<String> uploadFile(File file, String name) async {
+    print('upload file called');
+    String url = '';
+    String filename = name;
+    final firebaseStorageRef =
+        FirebaseStorage.instance.ref().child('uploads/$filename');
+    final upload = firebaseStorageRef.putFile(file);
+    final task = await upload.whenComplete(() => null);
+    task.ref.getDownloadURL().then((value) {
+      url = value.toString();
+
+      setState(() {
+        imgUrl = url;
+      });
+      print(imgUrl);
+    });
+    return url;
+  }
+
+  Future<File> uploadImage() async {
+    XFile? image;
+
+    ImagePicker()
+        .pickImage(
+            source: ImageSource.gallery,
+            maxHeight: 512,
+            maxWidth: 512,
+            imageQuality: 75)
+        .then((value) {
+      setState(() {
+        uploadFile(File(value!.path), value.name);
+        print('image pciked');
+      });
+    });
+    return File(image!.path);
+  }
 
   final _pass = TextEditingController();
   Future<User?> _registerWithEmailAndPassword(UserModel useree) async {
@@ -136,36 +178,19 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                       ),
-                      TextFormField(
-                          validator: (text) {
-                            if (text == null || text.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Enter a Valid UserName')));
-                              return 'username error';
-                            } else {
-                              return null;
-                            }
-                          },
-                          controller: _name,
-                          onSaved: (text) {},
-                          cursorColor: Colors.black,
-                          decoration: InputDecoration(
-                            suffixIcon: const Icon(
-                              Icons.person,
+                      GestureDetector(
+                        onTap: () async {
+                          await uploadImage();
+                        },
+                        child: CircleAvatar(
+                            backgroundColor: Colors.grey.shade200,
+                            radius: 45,
+                            child: Icon(
+                              Icons.add_a_photo_outlined,
                               color: Colors.black,
-                            ),
-                            hintText: 'Username',
-                            hintStyle: GoogleFonts.ubuntu(color: black),
-                            labelStyle: GoogleFonts.ubuntu(
-                              color: black,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: black)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: black)),
-                          ),
-                          maxLines: 1),
+                              size: 35,
+                            )),
+                      ),
                       SizedBox(
                         height: h * 0.02,
                       ),
@@ -294,23 +319,29 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          if (_cpass.text == _pass.text) {
-                            var user =
-                                await _registerWithEmailAndPassword(UserModel(
-                              bio: 'null',
-                              email: _email.text,
-                              uid: '',
-                              username: _name.text,
-                            ));
-                            if (user != null) {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => RootPage()));
-                            } else {}
-                          } else {
+                          if (imgUrl.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text('Passwords is not Same')));
+                                content: Text("Waiting for image to upload")));
+                          } else {
+                            if (_cpass.text == _pass.text) {
+                              var user = await _registerWithEmailAndPassword(
+                                  UserModel(
+                                      bio: 'null',
+                                      email: _email.text,
+                                      uid: '',
+                                      username: _name.text,
+                                      imgUrl: imgUrl));
+                              if (user != null) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => RootPage()));
+                              } else {}
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('Passwords is not Same')));
+                            }
                           }
                         },
                         child: const Text('SIGN UP'),
@@ -345,6 +376,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               email: '',
                               uid: '',
                               username: _name.text,
+                              imgUrl: '',
                             )).then((value) => Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
