@@ -56,12 +56,13 @@ class _ListView4State extends State<ListView4> {
                 child: Container(
                   height: h * 01.92,
                   child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: res.number,
-                      physics: NeverScrollableScrollPhysics(),
-                      // shrinkWrap: true,
-                      // physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (cotext, index) {
+                    scrollDirection: Axis.vertical,
+                    itemCount: res.number,
+                    physics: NeverScrollableScrollPhysics(),
+                    // shrinkWrap: true,
+                    // physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (cotext, index) {
+                      if (true) {
                         final _news = res.news![index];
                         return InkWell(
                           onTap: () {
@@ -120,7 +121,9 @@ class _ListView4State extends State<ListView4> {
                             ),
                           ),
                         );
-                      }),
+                      }
+                    },
+                  ),
                 ),
               ),
             );

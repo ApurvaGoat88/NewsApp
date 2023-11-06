@@ -31,7 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
-  Future<void> _handleGoogleSignIn(UserModel usermodel) async {
+  Future<User?> _handleGoogleSignIn(UserModel usermodel) async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -65,7 +65,9 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     } catch (e) {
       print(e);
-    }
+    } 
+     
+    
   }
 
   // final _email = TextEditingController();

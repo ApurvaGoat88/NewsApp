@@ -298,9 +298,11 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                 ),
                 centerTitle: true,
               ),
-              body: const Center(
-                child: Text('API Exhausted'),
-              ),
+              body: Center(
+                  child: SpinKitWanderingCubes(
+                color: Colors.black,
+                size: 60,
+              )),
             )
           : Scaffold(
               appBar: AppBar(
@@ -314,13 +316,6 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                   style: GoogleFonts.ubuntu(
                       fontWeight: FontWeight.bold, color: Colors.black),
                 ),
-                actions: [
-                  IconButton(
-                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                      },
-                      icon: const Icon(Icons.abc_sharp))
-                ],
               ),
               body: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -376,13 +371,14 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     Container(
-                      height: h * 0.1,
+                      height: h * 0.08,
                       width: w,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ListView.builder(
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
+                            controller: ScrollController(),
                             itemCount: _cate.length,
                             itemBuilder: (context, index) {
                               return InkWell(
@@ -393,15 +389,16 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                   setState(() {});
                                 },
                                 child: Container(
-                                  height: h * 0.15,
-                                  padding: const EdgeInsets.all(10),
+                                  height: h * 0.11,
+                                  padding: const EdgeInsets.only(
+                                      top: 3, bottom: 3, left: 10, right: 10),
                                   margin: const EdgeInsets.all(5),
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                       color: cate == _cate[index]
                                           ? Colors.orange.shade400
                                           : Colors.grey.shade200,
-                                      borderRadius: BorderRadius.circular(23)),
+                                      borderRadius: BorderRadius.circular(5)),
                                   child: Text(
                                     _cate[index].toString(),
                                     style: GoogleFonts.ubuntu(
@@ -586,7 +583,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                     ),
                     Container(
                       color: const Color.fromARGB(255, 255, 253, 253),
-                      height: h * 6.2,
+                      height: h * 5.96,
                       child: Column(
                         children: [
                           Row(
@@ -600,20 +597,20 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                       color: Colors.black, fontSize: 20),
                                 ),
                               ),
-                              GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    margin: EdgeInsets.only(right: w * 0.02),
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: w * 0.03),
-                                      child: Text(
-                                        'See All',
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.blue, fontSize: 15),
-                                      ),
-                                    ),
-                                  ))
+                              // GestureDetector(
+                              //     onTap: () {},
+                              //     child: Container(
+                              //       margin: EdgeInsets.only(right: w * 0.02),
+                              //       child: Padding(
+                              //         padding: EdgeInsets.symmetric(
+                              //             horizontal: w * 0.03),
+                              //         child: Text(
+                              //           'See All',
+                              //           style: GoogleFonts.poppins(
+                              //               color: Colors.blue, fontSize: 15),
+                              //         ),
+                              //       ),
+                              //     ))
                             ],
                           ),
                           Container(

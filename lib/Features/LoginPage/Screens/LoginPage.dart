@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _signInWithEmailAndPassword() async {
+  Future<User?> _signInWithEmailAndPassword() async {
     if (_formKey.currentState!.validate()) {
       try {
         final UserCredential userCredential =
@@ -57,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
           password: _pass.text,
         );
         final User? user = userCredential.user;
+        return user;
         print(user!.email.toString());
         // User logged in successfully, you can navigate to another screen.
       } catch (e) {
@@ -192,7 +193,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          await _signInWithEmailAndPassword();
+                          var user = await _signInWithEmailAndPassword();
+                          if (user != null) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RootPage()));
+                          }
                         },
                         child: Text('LOGIN'),
                         style: ElevatedButton.styleFrom(

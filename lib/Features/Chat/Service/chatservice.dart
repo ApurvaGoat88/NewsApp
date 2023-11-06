@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:news_project/model/MessageModel.dart';
 
 class ChatService extends ChangeNotifier {
@@ -10,14 +11,18 @@ class ChatService extends ChangeNotifier {
 
   void sendMessage(String Remail, String message) async {
     final currentuserId = _auth.currentUser!.uid;
+    final now = DateTime.now();
     final currentUserEmail = _auth.currentUser!.email.toString();
     final time = Timestamp.now();
+    final now11 = DateFormat("dd-MM-yyyy h-mma").format(now);
+    print(now11);
     Message newMessage = Message(
         receiverId: Remail,
         message: message,
         senderEmail: currentUserEmail,
         senderld: currentuserId,
-        timestamp: time);
+        timestamp: time,
+        date: now11.toString());
 
     List<String> ids = [currentuserId, Remail];
     ids.sort();

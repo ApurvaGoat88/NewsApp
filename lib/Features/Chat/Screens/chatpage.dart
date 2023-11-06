@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +14,7 @@ class Chatpage extends StatefulWidget {
 }
 
 class _ChatpageState extends State<Chatpage> {
-  var senderUrl;
+  var senderUrl = FirebaseAuth.instance.currentUser!.photoURL.toString();
   Future<String?> getImageUrlForUser() async {
     final em = FirebaseAuth.instance.currentUser!.email.toString();
 
@@ -31,7 +30,6 @@ class _ChatpageState extends State<Chatpage> {
       print(imageUrl);
       return imageUrl;
     } else {
-      // Handle the case when the user's document is not found
       return null;
     }
   }
@@ -46,7 +44,8 @@ class _ChatpageState extends State<Chatpage> {
         appBar: AppBar(
           title: Text(
             'Messenger',
-            style: GoogleFonts.ubuntu(fontSize: 25),
+            style:
+                GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 25),
           ),
           centerTitle: true,
           backgroundColor: Colors.white,
@@ -58,7 +57,7 @@ class _ChatpageState extends State<Chatpage> {
               _usersList(context, selected),
               Expanded(
                   child: Container(
-                margin: EdgeInsets.only(top: 5),
+                margin: const EdgeInsets.only(top: 5),
                 color: Colors.orange.shade100,
                 child: Container(
                     decoration: BoxDecoration(
@@ -70,13 +69,18 @@ class _ChatpageState extends State<Chatpage> {
                               spreadRadius: 1,
                               color: Colors.grey.shade500)
                         ],
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(25),
                             topRight: Radius.circular(25))),
                     alignment: Alignment.center,
                     width: MediaQuery.sizeOf(context).width,
                     child: cur.isEmpty
-                        ? Center(child: Text("SELECT A CHAT "))
+                        ? Center(
+                            child: Text(
+                            "Select a chat ",
+                            style: GoogleFonts.ubuntu(
+                                fontWeight: FontWeight.bold, fontSize: 25),
+                          ))
                         : Chatscreen(
                             Remail: cur['email'],
                             Rid: cur['uid'],
@@ -96,11 +100,11 @@ class _ChatpageState extends State<Chatpage> {
         final w = MediaQuery.sizeOf(context).width;
 
         if (snapshot.hasError) {
-          return Text('error');
+          return const Text('error');
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: SpinKitWanderingCubes(
               color: Colors.orange,
               size: 40,
@@ -111,7 +115,7 @@ class _ChatpageState extends State<Chatpage> {
             color: Colors.orange.shade100,
             height: w * 0.3,
             child: ListView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 children: snapshot.data!.docs
                     .map<Widget>((e) => buildUserList(e, context, selected))
@@ -134,7 +138,7 @@ class _ChatpageState extends State<Chatpage> {
       return GestureDetector(
         onTap: () {
           getImageUrlForUser().then((value) {
-            senderUrl = value;
+            senderUrl = value.toString();
             print(senderUrl);
           });
           print(_auth.currentUser!.email.toString() +

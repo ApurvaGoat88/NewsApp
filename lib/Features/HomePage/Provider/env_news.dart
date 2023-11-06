@@ -8,9 +8,8 @@ class EnvProvider extends ChangeNotifier {
   NewsModel _news = NewsModel();
   NewsModel _k = NewsModel();
   NewsModel get news => _news;
- 
-  // List<NewsModel> get _bookmark => bookmark 
 
+  // List<NewsModel> get _bookmark => bookmark
 
   Future<NewsModel> get_list(String text) async {
     isLoading = true;
@@ -28,15 +27,15 @@ class EnvProvider extends ChangeNotifier {
     }
   }
 }
+
 class AstroProvider extends ChangeNotifier {
   final _service = NewsService();
   bool isLoading = false;
   NewsModel _news = NewsModel();
   NewsModel _k = NewsModel();
   NewsModel get news => _news;
- 
-  // List<NewsModel> get _bookmark => bookmark 
 
+  // List<NewsModel> get _bookmark => bookmark
 
   Future<NewsModel> get_list(String text) async {
     isLoading = true;
@@ -46,12 +45,11 @@ class AstroProvider extends ChangeNotifier {
       _news = await _service.fetch_news(text);
       return _news;
     } catch (e) {
-      print('error');
+      print(e);
       return _k;
     } finally {
       isLoading = false;
       notifyListeners();
     }
-    
   }
 }

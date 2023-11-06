@@ -52,8 +52,9 @@ class _ListView22State extends State<ListView22> {
               child: Center(
                 child: Expanded(
                   child: Container(
-                    height: h * 1.92,
+                    height: h * 1.85,
                     child: ListView.builder(
+                      
                         scrollDirection: Axis.vertical,
                         itemCount: res.number,
                         physics: NeverScrollableScrollPhysics(),

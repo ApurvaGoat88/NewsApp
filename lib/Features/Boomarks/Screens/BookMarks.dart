@@ -38,8 +38,8 @@ class _BookMarksState extends State<BookMarks> {
           appBar: AppBar(
             title: Text(
               'Bookmarks',
-              style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold, fontSize: 20),
+              style:
+                  GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 25),
             ),
             centerTitle: true,
             backgroundColor: Colors.white,
@@ -53,7 +53,7 @@ class _BookMarksState extends State<BookMarks> {
                     child: Text(
                       "BooksMarks is Empty",
                       style:
-                          GoogleFonts.poppins(fontSize: 28, color: Colors.grey),
+                          GoogleFonts.ubuntu(fontSize: 28, color: Colors.grey),
                     ),
                   )
                 : ListView.builder(

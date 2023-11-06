@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_project/Features/LoginPage/Screens/startpage.dart';
 import 'package:news_project/model/UserModel.dart';
 
@@ -58,6 +59,14 @@ class _ProfilePageState extends State<ProfilePage> {
         ));
   }
 
+  Future signOut() async {
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().disconnect();
+
+    // : await FirebaseAuth.instance.signOut();
+    print('sign out');
+  }
+
   void update(String bio) async {
     final currentUser22 = FirebaseAuth.instance.currentUser;
 
@@ -90,7 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
           title: Text(
             'PROFILE',
             style:
-                GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+                GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 25),
           ),
 
           centerTitle: true,
@@ -167,19 +176,32 @@ class _ProfilePageState extends State<ProfilePage> {
                             IconButton(
                                 onPressed: () => showupdateopt(),
                                 icon: Icon(Icons.edit)),
-                            Container(
-                              alignment: Alignment.center,
-                              padding:
-                                  EdgeInsets.symmetric(horizontal: h * 0.04),
-                              width: w * 0.85,
-                              child: Expanded(
-                                child: Text(
-                                  userdata.bio,
-                                  style: GoogleFonts.ubuntu(color: Colors.grey),
-                                  maxLines: null,
+                            Column(children: [
+                              Text(
+                                'Bio',
+                                style: GoogleFonts.ubuntu(
+                                    fontSize: 20, color: Colors.grey.shade600),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: Colors.grey.shade400),
+                                    borderRadius: BorderRadius.circular(10)),
+                                alignment: Alignment.center,
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: h * 0.04),
+                                width: w * 0.85,
+                                height: h * 0.2,
+                                child: Expanded(
+                                  child: Text(
+                                    userdata.bio,
+                                    style:
+                                        GoogleFonts.ubuntu(color: Colors.grey),
+                                    maxLines: null,
+                                  ),
                                 ),
                               ),
-                            ),
+                            ]),
                           ],
                         ),
                       ),
@@ -223,8 +245,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 color: Colors.blue),
                                           ),
                                           onTap: () async {
-                                            await _auth.signOut().whenComplete(
-                                                () => Navigator.pushReplacement(
+                                            await signOut().whenComplete(() =>
+                                                Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
