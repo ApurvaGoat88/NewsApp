@@ -65,9 +65,7 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     } catch (e) {
       print(e);
-    } 
-     
-    
+    }
   }
 
   // final _email = TextEditingController();
@@ -166,32 +164,43 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Positioned(
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: h * 0.02),
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: h * 0.02),
-                          child: Container(
-                            child: Text(
-                              'Create New Account',
-                              style: GoogleFonts.openSans(
-                                  fontSize: h * 0.04,
-                                  fontWeight: FontWeight.bold,
-                                  color: orange),
-                            ),
+                          child: Text(
+                            'Create New Account',
+                            style: GoogleFonts.openSans(
+                                fontSize: h * 0.04,
+                                fontWeight: FontWeight.bold,
+                                color: orange),
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () async {
-                          await uploadImage();
-                        },
-                        child: CircleAvatar(
-                            backgroundColor: Colors.grey.shade200,
-                            radius: 45,
-                            child: Icon(
-                              Icons.add_a_photo_outlined,
-                              color: Colors.black,
-                              size: 35,
-                            )),
+                      Card(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                await uploadImage();
+                              },
+                              child: CircleAvatar(
+                                  backgroundColor: Colors.grey.shade200,
+                                  radius: 30,
+                                  child: Icon(
+                                    Icons.add_a_photo_outlined,
+                                    color: Colors.black,
+                                    size: 20,
+                                  )),
+                            ),
+                            SizedBox(
+                              width: w * 0.1,
+                            ),
+                            Container(
+                              child: Text('Upload a Profile picture'),
+                            )
+                          ],
+                        ),
                       ),
                       SizedBox(
                         height: h * 0.02,
@@ -404,9 +413,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               children: [
                                 Text(
                                   'Continue with Google',
-                                  style: GoogleFonts.ubuntu(
-                                      color: Colors.orange,
-                                      fontSize: h * 0.015),
+                                  style:
+                                      GoogleFonts.ubuntu(fontSize: h * 0.015),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -427,7 +435,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           TextButton(
                               onPressed: () {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>

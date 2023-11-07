@@ -59,6 +59,44 @@ class _ProfilePageState extends State<ProfilePage> {
         ));
   }
 
+  void showAlertBox() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'LOGOUT',
+            style:
+                GoogleFonts.ubuntu(fontSize: 25, fontWeight: FontWeight.w500),
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              GestureDetector(
+                child: Text(
+                  "No",
+                  style: GoogleFonts.ubuntu(color: Colors.blue),
+                ),
+                onTap: () => Navigator.pop(context),
+              ),
+              GestureDetector(
+                child: Text(
+                  "Yes",
+                  style: GoogleFonts.ubuntu(color: Colors.blue),
+                ),
+                onTap: () async {
+                  await signOut().whenComplete(() => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => StartPage())));
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future signOut() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().disconnect();
@@ -78,7 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       await documentRef.update({
         'bio': bio,
-      });
+      }).whenComplete(() => Navigator.pop(context));
       print('Document successfully updated');
     } catch (e) {
       print('Error updating document: $e');
@@ -88,6 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final usercollection = FirebaseFirestore.instance.collection('Users');
+  List drop = ['Logout'];
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -101,6 +140,11 @@ class _ProfilePageState extends State<ProfilePage> {
             style:
                 GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 25),
           ),
+          actions: [
+            IconButton(
+                onPressed: () => showAlertBox(),
+                icon: Icon(Icons.logout_rounded))
+          ],
 
           centerTitle: true,
           // elevation:0,
@@ -211,64 +255,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       SizedBox(
                         height: h * 0.02,
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text(
-                                      'Sign Out now ? ',
-                                      style: GoogleFonts.ubuntu(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    content: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        GestureDetector(
-                                          child: Text(
-                                            "No",
-                                            style: GoogleFonts.ubuntu(
-                                                color: Colors.blue),
-                                          ),
-                                          onTap: () => Navigator.pop(context),
-                                        ),
-                                        GestureDetector(
-                                          child: Text(
-                                            "Yes",
-                                            style: GoogleFonts.ubuntu(
-                                                color: Colors.blue),
-                                          ),
-                                          onTap: () async {
-                                            await signOut().whenComplete(() =>
-                                                Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            StartPage())));
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                            child: const Text('Log out'),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
-                                elevation: 4,
-                                minimumSize: Size(w * 0.84, h * 0.05),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24))),
-                          ),
-                        ],
-                      )
                     ],
                   ),
                 ),

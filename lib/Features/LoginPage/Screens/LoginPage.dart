@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_project/Features/LoginPage/Screens/SignUpPage.dart';
-import 'package:news_project/Features/HomePage/Screens/homepage.dart';
+// import 'package:news_project/Features/HomePage/Screens/homepage.dart';
 import 'package:news_project/Features/HomePage/Screens/navbar.dart';
+import 'package:news_project/model/UserModel.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final _email = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final black = Colors.black;
-  final orange = Color(0xFFFA800F);
+  final orange = const Color(0xFFFA800F);
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
@@ -38,8 +39,18 @@ class _LoginPageState extends State<LoginPage> {
         final UserCredential authResult =
             await FirebaseAuth.instance.signInWithCredential(credential);
         final User? user = authResult.user;
+        UserModel userdata = UserModel(
+            bio: '',
+            email: user!.email.toString(),
+            username: user.displayName.toString(),
+            uid: user.uid,
+            imgUrl: user.photoURL.toString());
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(user.email.toString().split('@')[0])
+            .set(userdata.toJson());
 
-        print('User signed in with Google: ${user!.displayName}');
+        print('User signed in with Google: ${user.displayName}');
         return user;
       }
     } on FirebaseAuthException catch (error) {
@@ -57,9 +68,8 @@ class _LoginPageState extends State<LoginPage> {
           password: _pass.text,
         );
         final User? user = userCredential.user;
-        return user;
         print(user!.email.toString());
-        // User logged in successfully, you can navigate to another screen.
+        return user;
       } catch (e) {
         print(e.toString());
       }
@@ -73,9 +83,9 @@ class _LoginPageState extends State<LoginPage> {
     final w = MediaQuery.sizeOf(context).width;
     final h = MediaQuery.sizeOf(context).height;
     return Scaffold(
-      backgroundColor: Color(0xFFFA800F),
+      backgroundColor: const Color(0xFFFA800F),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Container(
           height: h,
           width: w,
@@ -93,17 +103,18 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Positioned(
+                      SizedBox(
+                        height: h * 0.05,
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: h * 0.02),
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: h * 0.02),
-                          child: Container(
-                            child: Text(
-                              'Welcome Back',
-                              style: GoogleFonts.openSans(
-                                  fontSize: h * 0.04,
-                                  fontWeight: FontWeight.bold,
-                                  color: orange),
-                            ),
+                          child: Text(
+                            'Welcome Back',
+                            style: GoogleFonts.openSans(
+                                fontSize: h * 0.04,
+                                fontWeight: FontWeight.bold,
+                                color: orange),
                           ),
                         ),
                       ),
@@ -113,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                                 text.isEmpty ||
                                 text.contains('@') == false) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                       content: Text('Enter a Valid Email')));
                               return 'Email is Not Valid ';
                             }
@@ -123,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                           onSaved: (text) {},
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
-                            suffixIcon: Icon(
+                            suffixIcon: const Icon(
                               Icons.email_outlined,
                               color: Colors.black,
                             ),
@@ -133,8 +144,10 @@ class _LoginPageState extends State<LoginPage> {
                               color: black,
                             ),
                             enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
                                 borderSide: BorderSide(color: black)),
                             focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
                                 borderSide: BorderSide(color: black)),
                           ),
                           maxLines: 1),
@@ -146,9 +159,10 @@ class _LoginPageState extends State<LoginPage> {
                             if (text == null ||
                                 text.isEmpty ||
                                 text.length <= 6) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                  content: Text(
-                                      'Password must be more than 6 letters')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Password must be more than 6 letters')));
                               return 'Password Error';
                             } else {
                               return null;
@@ -176,15 +190,34 @@ class _LoginPageState extends State<LoginPage> {
                               color: black,
                             ),
                             enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
                                 borderSide: BorderSide(color: black)),
                             focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
                                 borderSide: BorderSide(color: black)),
                           ),
                           maxLines: 1),
                       Row(
                         children: [
                           TextButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                if (_email.text.isNotEmpty ||
+                                    _email.text.contains('@')) {
+                                  await _auth
+                                      .sendPasswordResetEmail(
+                                          email: _email.text)
+                                      .whenComplete(() => ScaffoldMessenger.of(
+                                              context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  "Password reset link sent to ${_email.text}"))));
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content:
+                                              Text("Enter a Valid mail ")));
+                                }
+                              },
                               child: Text(
                                 'Forgot Password?',
                                 style: GoogleFonts.ubuntu(),
@@ -195,13 +228,14 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           var user = await _signInWithEmailAndPassword();
                           if (user != null) {
+                            // ignore: use_build_context_synchronously
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RootPage()));
+                                    builder: (context) => const RootPage()));
                           }
                         },
-                        child: Text('LOGIN'),
+                        child: const Text('LOGIN'),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: orange,
                             elevation: 10,
@@ -213,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: h * 0.02,
                       ),
                       Row(children: <Widget>[
-                        Expanded(child: Divider()),
+                        const Expanded(child: Divider()),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
@@ -221,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: GoogleFonts.ubuntu(color: Colors.grey),
                           ),
                         ),
-                        Expanded(child: Divider()),
+                        const Expanded(child: Divider()),
                       ]),
                       SizedBox(
                         height: h * 0.02,
@@ -231,17 +265,18 @@ class _LoginPageState extends State<LoginPage> {
                             var user = await _handleGoogleSignIn();
 
                             if (user != null) {
+                              // ignore: use_build_context_synchronously
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => RootPage()));
+                                      builder: (context) => const RootPage()));
                             }
                           },
                           child: Container(
                             decoration: BoxDecoration(
                                 color: Colors.grey.shade50,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: const [
                                   BoxShadow(
                                     color: Colors.grey,
                                     offset: Offset(0.0, 0.50), //(x,y)
@@ -250,19 +285,18 @@ class _LoginPageState extends State<LoginPage> {
                                 ],
                                 border:
                                     Border.all(color: Colors.grey.shade200)),
-                            width: w * 0.9,
+                            width: w * 0.8,
                             height: h * 0.07,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(
                                   'Continue with Google',
-                                  style: GoogleFonts.ubuntu(
-                                      color: Colors.orange,
-                                      fontSize: h * 0.015),
+                                  style:
+                                      GoogleFonts.ubuntu(fontSize: h * 0.015),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(10.0),
                                   child: Image.asset('assets/pngegg.png'),
                                 ),
                               ],
@@ -283,7 +317,8 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => SignUpPage()));
+                                        builder: (context) =>
+                                            const SignUpPage()));
                               },
                               child: Text(
                                 'Create new account',

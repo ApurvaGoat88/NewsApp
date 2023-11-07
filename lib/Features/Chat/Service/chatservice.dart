@@ -8,8 +8,22 @@ class ChatService extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   final _store = FirebaseFirestore.instance;
   String current = '';
+Future<void> clearChat(String uid ,String uid2) async {
+   List<String> ids = [uid, uid2];
+    ids.sort();
+    String roomId = ids.join("-");
+  try {
+    await _store.collection('ChatRoom').doc(roomId).collection('Messages').get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
+    });
+  } catch (e) {
+    print('Error deleting messages: $e');
+  }
+}
 
-  void sendMessage(String Remail, String message) async {
+  void sendMessage(String Remail, String message, String imgUrl) async {
     final currentuserId = _auth.currentUser!.uid;
     final now = DateTime.now();
     final currentUserEmail = _auth.currentUser!.email.toString();
@@ -22,7 +36,8 @@ class ChatService extends ChangeNotifier {
         senderEmail: currentUserEmail,
         senderld: currentuserId,
         timestamp: time,
-        date: now11.toString());
+        date: now11.toString(),
+        imgUrl: imgUrl);
 
     List<String> ids = [currentuserId, Remail];
     ids.sort();
@@ -32,6 +47,14 @@ class ChatService extends ChangeNotifier {
         .doc(room)
         .collection('Messages')
         .add(newMessage.toMAP());
+  }
+
+  void delete(String uid, String uid2) async {
+    List<String> ids = [uid, uid2];
+    ids.sort();
+    String room = ids.join("-");
+    final doc =await _store.collection('ChatRoom').doc(room).collection('Messages').get();
+    
   }
 
   Stream<QuerySnapshot> getMessages(String uid2, String uid1) {

@@ -1,3 +1,6 @@
+import 'dart:io';
+// import 'dart:js';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:news_project/Features/Chat/Service/chatservice.dart';
 import 'package:news_project/Features/Profile/userProfilePage.dart';
 import 'package:news_project/model/UserModel.dart';
@@ -25,6 +29,7 @@ class Chatscreen extends StatefulWidget {
 }
 
 class _ChatscreenState extends State<Chatscreen> {
+  bool isLoading = false;
   Future<String?> getImageUrlForUser() async {
     final em = FirebaseAuth.instance.currentUser!.email.toString();
 
@@ -48,9 +53,10 @@ class _ChatscreenState extends State<Chatscreen> {
   final _messageController = TextEditingController();
   final chatService = ChatService();
   final auth = FirebaseAuth.instance;
-  void send() {
-    if (_messageController.text.isNotEmpty) {
-      chatService.sendMessage(widget.Rid, _messageController.text.toString());
+  void send(String imgUrl) {
+    if (_messageController.text.isNotEmpty || imgUrl.isNotEmpty) {
+      chatService.sendMessage(
+          widget.Rid, _messageController.text.toString(), imgUrl);
     }
     _messageController.clear();
   }
@@ -129,6 +135,11 @@ class _ChatscreenState extends State<Chatscreen> {
                     ),
                   ),
                 ),
+                IconButton(
+                    onPressed: () {
+                      ChatService().clearChat(widget.Rid, dt['senderId']);
+                    },
+                    icon: Icon(Icons.delete_forever))
               ],
             ),
           ),
@@ -167,7 +178,7 @@ class _ChatscreenState extends State<Chatscreen> {
             ),
           );
         }
-        print('tolist');
+        // print('tolist');
         return ListView(
             reverse: true,
             physics: BouncingScrollPhysics(),
@@ -177,16 +188,19 @@ class _ChatscreenState extends State<Chatscreen> {
     );
   }
 
+  var dt;
   Widget messages(DocumentSnapshot docsss, context) {
     final w = MediaQuery.sizeOf(context).width;
+    final h = MediaQuery.sizeOf(context).height;
     Map<String, dynamic> data = docsss.data() as Map<String, dynamic>;
-    print(data['senderId']);
+    dt = data;
+    // print(data['senderId']);
     var align = (data['senderId'] == auth.currentUser!.uid)
         ? Alignment.centerRight
         : Alignment.centerLeft;
 
     // final kk = (data['senderId'] == auth.currentUser!.uid);
-    print(data['timeStamp'].toString());
+    // print(data['timeStamp'].toString());
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Container(
@@ -207,39 +221,69 @@ class _ChatscreenState extends State<Chatscreen> {
                     // crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Container(
-                              alignment: Alignment.center,
-                              width: w * 0.7,
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.orange.shade300),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(10),
-                                    topLeft: Radius.circular(10),
-                                    bottomRight: Radius.circular(10),
-                                  ),
-                                  color: align == Alignment.centerLeft
-                                      ? Colors.white
-                                      : Colors.orange.shade100),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      data['message'],
-                                      style: GoogleFonts.ubuntu(fontSize: 20),
+                          data['imgUrl'] == ''
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  width: data['message'].toString().length >= 25
+                                      ? w * 0.7
+                                      : null,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.orange.shade300),
+                                      borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(10),
+                                        topLeft: Radius.circular(10),
+                                        bottomRight: Radius.circular(10),
+                                      ),
+                                      color: align == Alignment.centerLeft
+                                          ? Colors.white
+                                          : Colors.orange.shade100),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          data['message'],
+                                          style:
+                                              GoogleFonts.ubuntu(fontSize: 20),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ))
+                              : GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Center(
+                                            child: Image.network(
+                                                data['imgUrl'].toString()),
+                                          );
+                                        });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.orange.shade50,
+                                            width: 5)),
+                                    height: 300,
+                                    width: 300,
+                                    child: Image.network(
+                                      data['imgUrl'].toString(),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 ),
-                              )),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Container(
                                 alignment: Alignment.centerRight,
+
                                 // color: Colors.amber,
-                                width: w * 0.7,
+
                                 // color: Colors.amber,
                                 child: Text(
                                   data['date']
@@ -275,28 +319,57 @@ class _ChatscreenState extends State<Chatscreen> {
                         ),
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                              alignment: Alignment.center,
-                              width: w * 0.7,
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(10),
-                                    topRight: Radius.circular(10),
-                                    bottomLeft: Radius.circular(10),
+                          data['imgUrl'] == ''
+                              ? Container(
+                                  width: data['message'].toString().length >= 25
+                                      ? w * 0.7
+                                      : null,
+                                  alignment: Alignment.centerLeft,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.grey.shade300),
+                                      borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(10),
+                                        topRight: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10),
+                                      ),
+                                      color: align == Alignment.centerLeft
+                                          ? Colors.grey.shade200
+                                          : Colors.orange.shade200),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Text(
+                                      data['message'],
+                                      style: GoogleFonts.ubuntu(fontSize: 20),
+                                    ),
+                                  ))
+                              : GestureDetector(
+                                  onTap: () {
+                                    print('ontap');
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Center(
+                                            child: Image.network(
+                                                data['imgUrl'].toString()),
+                                          );
+                                        });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey.shade100,
+                                            width: 5)),
+                                    height: 300,
+                                    width: 300,
+                                    child: Image.network(
+                                      data['imgUrl'].toString(),
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
-                                  color: align == Alignment.centerLeft
-                                      ? Colors.grey.shade200
-                                      : Colors.orange.shade200),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Text(
-                                  data['message'],
-                                  style: GoogleFonts.ubuntu(fontSize: 20),
                                 ),
-                              )),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -328,6 +401,113 @@ class _ChatscreenState extends State<Chatscreen> {
     );
   }
 
+  // String imgUrl = '';
+  Future<String> uploadFile(File file, String name, context) async {
+    final h = MediaQuery.sizeOf(context).height;
+    final w = MediaQuery.sizeOf(context).width;
+    print('upload file called');
+    String url = '';
+    bool isload = true;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: SpinKitWanderingCubes(
+              color: Colors.orange,
+              size: 50,
+            ),
+          );
+        });
+    String filename = name;
+    final firebaseStorageRef =
+        FirebaseStorage.instance.ref().child('uploads/$filename');
+    final upload = firebaseStorageRef.putFile(file);
+    final task = await upload.whenComplete(() => Navigator.pop(context));
+    task.ref.getDownloadURL().then((value) {
+      url = value.toString();
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              title: Text(widget.Remail.toString().split('@')[0]),
+              centerTitle: true,
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.keyboard_return)),
+            ),
+            body: Container(
+              width: w,
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey.shade200,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.shade200,
+                          image: DecorationImage(
+                              image: AssetImage('assets/3731533_1971537.jpg'),
+                              fit: BoxFit.cover)),
+                      child: Image.network(value, fit: BoxFit.cover)),
+                  ElevatedButton(
+                      onPressed: () {
+                        send(value);
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          minimumSize: Size(w * 0.7, h * 0.05),
+                          backgroundColor: Colors.orange.shade200,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                      child: Text(
+                        'Send',
+                        style: GoogleFonts.ubuntu(
+                            fontSize: 25, color: Colors.black),
+                      ))
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      setState(() {});
+      print(value);
+
+      // imgUrl = '';
+    });
+    return url;
+  }
+
+  void imagePick() async {
+    XFile? image;
+    var link = '';
+    await ImagePicker()
+        .pickImage(
+            source: ImageSource.gallery,
+            maxHeight: 512,
+            maxWidth: 512,
+            imageQuality: 75)
+        .then((value) {
+      if (value != null) {
+        setState(() {
+          uploadFile(File(value.path), value.name, context);
+        });
+      } else {}
+    });
+  }
+
   Widget input() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
@@ -335,13 +515,19 @@ class _ChatscreenState extends State<Chatscreen> {
         controller: _messageController,
         textInputAction: TextInputAction.newline,
         decoration: InputDecoration(
+            prefixIcon: IconButton(
+                onPressed: () => imagePick(), icon: Icon(Icons.image)),
+            prefixIconColor: Colors.black,
             suffixIconColor: Colors.black,
             hintText: 'Message',
             focusColor: Colors.black,
             hoverColor: Colors.black,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(23)),
             suffixIcon: IconButton(
-                onPressed: () => send(), icon: Icon(Icons.send_rounded))),
+                onPressed: () {
+                  send('');
+                },
+                icon: Icon(Icons.send_rounded))),
       ),
     );
   }

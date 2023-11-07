@@ -496,9 +496,12 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.all(
-                                                            10.0),
+                                                            20.0),
                                                     child: Center(
                                                       child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
                                                         children: [
                                                           Text(
                                                             _news.title
