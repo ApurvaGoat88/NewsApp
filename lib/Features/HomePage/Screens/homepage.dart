@@ -67,6 +67,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
   ];
   final List items = ['Political', 'Environment', 'Astrology'];
   void addComment(int? id, String comments, user) async {
+    _comment.clear();
     getComments(id).then((value) {
       print(value);
       value.add({'comment': comments, 'user': user});
@@ -82,6 +83,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
   }
 
   void addCommentifNULL(int? id, String comments, user) async {
+    _comment.clear();
     FirebaseFirestore.instance.collection('Comments').doc(id.toString()).set({
       'comments': [
         {'comment': comments, 'user': user}
@@ -155,47 +157,41 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                           physics: const BouncingScrollPhysics(),
                           itemCount: value.length,
                           itemBuilder: (context, index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 10.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border:
-                                        Border.all(color: Colors.grey.shade200),
-                                    borderRadius: BorderRadius.circular(5)),
-                                width: w,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: w * 0.05, vertical: h * 0.00),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          GestureDetector(
-                                            child: Text(
-                                              value[index]['user'].toString(),
-                                              style: GoogleFonts.ubuntu(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ],
+                            return Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border:
+                                      Border.all(color: Colors.grey.shade200),
+                                  borderRadius: BorderRadius.circular(5)),
+                              width: w,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: w * 0.05, vertical: h * 0.02),
+                                child: Container(
+                                  width: w,
+                                  alignment: Alignment.centerLeft,
+                                  child: Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: RichText(
+                                        text: TextSpan(
+                                            text:
+                                                value[index]['user'].toString(),
+                                            children: [
+                                              TextSpan(
+                                                text: "  " +
+                                                    value[index]['comment'],
+                                                style: GoogleFonts.ubuntu(
+                                                    color: Colors.grey.shade700,
+                                                    fontSize: 15),
+                                              )
+                                            ],
+                                            style: GoogleFonts.ubuntu(
+                                                color: Colors.black,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold)),
                                       ),
-                                      Container(
-                                        width: w,
-                                        alignment: Alignment.centerLeft,
-                                        child: Expanded(
-                                          child: Text(
-                                            value[index]['comment'].toString(),
-                                            style: GoogleFonts.ubuntu(),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -220,6 +216,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                 onPressed: () {
                                   addComment(id, _comment.text,
                                       user!.email!.split('@')[0].toString());
+                                  _comment.clear;
                                   setState(() {});
                                 },
                                 icon: const Icon(Icons.send_rounded))),

@@ -408,53 +408,138 @@ class _ChatscreenState extends State<Chatscreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          data['imgUrl'] == ''
-                              ? Container(
-                                  width: data['message'].toString().length >= 25
-                                      ? w * 0.7
-                                      : null,
-                                  alignment: Alignment.centerLeft,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.grey.shade300),
-                                      borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(10),
-                                        topRight: Radius.circular(10),
-                                        bottomLeft: Radius.circular(10),
+                          data['id'] == 'null'
+                              ? data['imgUrl'] == ''
+                                  ? Container(
+                                      width:
+                                          data['message'].toString().length >=
+                                                  25
+                                              ? w * 0.7
+                                              : null,
+                                      alignment: Alignment.centerLeft,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                          borderRadius: BorderRadius.only(
+                                            bottomRight: Radius.circular(10),
+                                            topRight: Radius.circular(10),
+                                            bottomLeft: Radius.circular(10),
+                                          ),
+                                          color: align == Alignment.centerLeft
+                                              ? Colors.grey.shade200
+                                              : Colors.orange.shade200),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Text(
+                                          data['message'],
+                                          style:
+                                              GoogleFonts.ubuntu(fontSize: 20),
+                                        ),
+                                      ))
+                                  : GestureDetector(
+                                      onTap: () {
+                                        print('ontap');
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return Center(
+                                                child: Image.network(
+                                                    data['imgUrl'].toString()),
+                                              );
+                                            });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
+                                            border: Border.all(
+                                                color: Colors.grey.shade100,
+                                                width: 5)),
+                                        height: 300,
+                                        width: 300,
+                                        child: Image.network(
+                                          data['imgUrl'].toString(),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                      color: align == Alignment.centerLeft
-                                          ? Colors.grey.shade200
-                                          : Colors.orange.shade200),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Text(
-                                      data['message'],
-                                      style: GoogleFonts.ubuntu(fontSize: 20),
-                                    ),
-                                  ))
+                                    )
                               : GestureDetector(
                                   onTap: () {
-                                    print('ontap');
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return Center(
-                                            child: Image.network(
-                                                data['imgUrl'].toString()),
-                                          );
-                                        });
+                                    print('news');
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => NewsScreen1(
+                                                id: data['id'],
+                                                title: data['title'],
+                                                text: data['text'],
+                                                url: data['image'])));
                                   },
                                   child: Container(
+                                    alignment: Alignment.bottomCenter,
                                     decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
+                                        image: DecorationImage(
+                                            image: NetworkImage(data['image']),
+                                            fit: BoxFit.cover),
+                                        color: Colors.grey.shade50,
                                         border: Border.all(
-                                            color: Colors.grey.shade100,
+                                            color: Colors.grey.shade50,
                                             width: 5)),
                                     height: 300,
                                     width: 300,
-                                    child: Image.network(
-                                      data['imgUrl'].toString(),
-                                      fit: BoxFit.cover,
+                                    child: Opacity(
+                                      opacity: 0.8,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            boxShadow: const [
+                                              BoxShadow(
+                                                  blurRadius: 4,
+                                                  offset: Offset(0, 0.5))
+                                            ],
+                                            color: Colors.grey.shade300,
+                                            borderRadius:
+                                                BorderRadius.circular(23)),
+                                        height: 100,
+                                        width: 250,
+                                        child: Column(
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      15.0),
+                                                  child: Text(
+                                                    data['title'],
+                                                    maxLines: 3,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: GoogleFonts.ubuntu(),
+                                                  ),
+                                                ),
+                                                // SizedBox(height: 6),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          right: 8),
+                                                      child: Text(
+                                                        'Shared from News',
+                                                        style:
+                                                            GoogleFonts.ubuntu(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade400,
+                                                                fontSize: 5),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
