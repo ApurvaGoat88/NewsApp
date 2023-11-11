@@ -14,7 +14,15 @@ class Chatpage extends StatefulWidget {
 }
 
 class _ChatpageState extends State<Chatpage> {
-  var senderUrl = FirebaseAuth.instance.currentUser!.photoURL.toString();
+  @override
+  void initState() {
+    getImageUrlForUser().then((value) {
+      print(value);
+      senderUrl = value.toString();
+    });
+  }
+
+  var senderUrl = '';
   Future<String?> getImageUrlForUser() async {
     final em = FirebaseAuth.instance.currentUser!.email.toString();
 
@@ -139,6 +147,7 @@ class _ChatpageState extends State<Chatpage> {
         onTap: () {
           getImageUrlForUser().then((value) {
             senderUrl = value.toString();
+
             print(senderUrl);
           });
           print(_auth.currentUser!.email.toString() +

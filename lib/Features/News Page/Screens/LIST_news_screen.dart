@@ -18,6 +18,7 @@ class NewsScreenofList extends StatefulWidget {
 }
 
 class _NewsScreenofListState extends State<NewsScreenofList> {
+  int max_line = 5;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -139,10 +140,28 @@ class _NewsScreenofListState extends State<NewsScreenofList> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        res.news![widget.index].text.toString(),
-                        style: GoogleFonts.poppins(
-                            color: Colors.black, fontSize: 18),
+                      child: Column(
+                        children: [
+                          Text(
+                            res.news![widget.index].text.toString(),
+                            style: GoogleFonts.poppins(
+                                color: Colors.black, fontSize: 18),
+                            maxLines: max_line,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                max_line += 10;
+                              });
+                            },
+                            child: Text(
+                              'Readmore',
+                              style: GoogleFonts.poppins(
+                                  color: Colors.blue, fontSize: 18),
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   ],

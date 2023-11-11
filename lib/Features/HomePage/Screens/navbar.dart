@@ -13,7 +13,9 @@ import 'package:provider/provider.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 class RootPage extends StatefulWidget {
-  const RootPage({Key? key}) : super(key: key);
+  const RootPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _RootPageState createState() => _RootPageState();

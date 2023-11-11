@@ -17,6 +17,7 @@ class NewsScreenofAstro extends StatefulWidget {
 }
 
 class _NewsScreenofAstroState extends State<NewsScreenofAstro> {
+  int max_line = 5;
   @override
   Widget build(BuildContext context) {
     return Consumer<AstroProvider>(builder: (context, value, child) {
@@ -131,10 +132,28 @@ class _NewsScreenofAstroState extends State<NewsScreenofAstro> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        res.news![widget.index].text.toString(),
-                        style: GoogleFonts.poppins(
-                            color: Colors.black, fontSize: 18),
+                      child: Column(
+                        children: [
+                          Text(
+                            res.news![widget.index].text.toString(),
+                            style: GoogleFonts.poppins(
+                                color: Colors.black, fontSize: 18),
+                            maxLines: max_line,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                max_line += 10;
+                              });
+                            },
+                            child: Text(
+                              'Readmore',
+                              style: GoogleFonts.poppins(
+                                  color: Colors.blue, fontSize: 18),
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   ],

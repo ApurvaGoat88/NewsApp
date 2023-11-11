@@ -9,9 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:news_project/Features/Chat/Screens/newsPage.dart';
 import 'package:news_project/Features/Chat/Service/chatservice.dart';
 import 'package:news_project/Features/Profile/userProfilePage.dart';
 import 'package:news_project/model/UserModel.dart';
+import 'package:news_project/model/news_model.dart';
 
 class Chatscreen extends StatefulWidget {
   const Chatscreen(
@@ -50,13 +52,18 @@ class _ChatscreenState extends State<Chatscreen> {
     }
   }
 
+  News news = News();
   final _messageController = TextEditingController();
   final chatService = ChatService();
   final auth = FirebaseAuth.instance;
   void send(String imgUrl) {
     if (_messageController.text.isNotEmpty || imgUrl.isNotEmpty) {
       chatService.sendMessage(
-          widget.Rid, _messageController.text.toString(), imgUrl);
+        widget.Rid,
+        _messageController.text.toString(),
+        imgUrl,
+        news,
+      );
     }
     _messageController.clear();
   }
@@ -135,11 +142,6 @@ class _ChatscreenState extends State<Chatscreen> {
                     ),
                   ),
                 ),
-                IconButton(
-                    onPressed: () {
-                      ChatService().clearChat(widget.Rid, dt['senderId']);
-                    },
-                    icon: Icon(Icons.delete_forever))
               ],
             ),
           ),
@@ -223,56 +225,141 @@ class _ChatscreenState extends State<Chatscreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          data['imgUrl'] == ''
-                              ? Container(
-                                  alignment: Alignment.center,
-                                  width: data['message'].toString().length >= 25
-                                      ? w * 0.7
-                                      : null,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.orange.shade300),
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(10),
-                                        topLeft: Radius.circular(10),
-                                        bottomRight: Radius.circular(10),
-                                      ),
-                                      color: align == Alignment.centerLeft
-                                          ? Colors.white
-                                          : Colors.orange.shade100),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          data['message'],
-                                          style:
-                                              GoogleFonts.ubuntu(fontSize: 20),
+                          data['id'] == 'null'
+                              ? data['imgUrl'] == ''
+                                  ? Container(
+                                      alignment: Alignment.center,
+                                      width:
+                                          data['message'].toString().length >=
+                                                  25
+                                              ? w * 0.7
+                                              : null,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.orange.shade300),
+                                          borderRadius: BorderRadius.only(
+                                            bottomLeft: Radius.circular(10),
+                                            topLeft: Radius.circular(10),
+                                            bottomRight: Radius.circular(10),
+                                          ),
+                                          color: align == Alignment.centerLeft
+                                              ? Colors.white
+                                              : Colors.orange.shade100),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              data['message'],
+                                              style: GoogleFonts.ubuntu(
+                                                  fontSize: 20),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ))
+                                      ))
+                                  : GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return Center(
+                                                child: Image.network(
+                                                    data['imgUrl'].toString()),
+                                              );
+                                            });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.orange.shade50,
+                                            border: Border.all(
+                                                color: Colors.orange.shade50,
+                                                width: 5)),
+                                        height: 300,
+                                        width: 300,
+                                        child: Image.network(
+                                          data['imgUrl'].toString(),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    )
                               : GestureDetector(
                                   onTap: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return Center(
-                                            child: Image.network(
-                                                data['imgUrl'].toString()),
-                                          );
-                                        });
+                                    print('news');
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => NewsScreen1(
+                                                id: data['id'],
+                                                title: data['title'],
+                                                text: data['text'],
+                                                url: data['image'])));
                                   },
                                   child: Container(
+                                    alignment: Alignment.bottomCenter,
                                     decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: NetworkImage(data['image']),
+                                            fit: BoxFit.cover),
+                                        color: Colors.orange.shade50,
                                         border: Border.all(
                                             color: Colors.orange.shade50,
                                             width: 5)),
                                     height: 300,
                                     width: 300,
-                                    child: Image.network(
-                                      data['imgUrl'].toString(),
-                                      fit: BoxFit.cover,
+                                    child: Opacity(
+                                      opacity: 0.8,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            boxShadow: const [
+                                              BoxShadow(
+                                                  blurRadius: 4,
+                                                  offset: Offset(0, 0.5))
+                                            ],
+                                            color: Colors.grey.shade300,
+                                            borderRadius:
+                                                BorderRadius.circular(23)),
+                                        height: 100,
+                                        width: 250,
+                                        child: Column(
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      15.0),
+                                                  child: Text(
+                                                    data['title'],
+                                                    maxLines: 3,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: GoogleFonts.ubuntu(),
+                                                  ),
+                                                ),
+                                                // SizedBox(height: 6),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          right: 8),
+                                                      child: Text(
+                                                        'Shared from News',
+                                                        style:
+                                                            GoogleFonts.ubuntu(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade400,
+                                                                fontSize: 5),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -359,6 +446,7 @@ class _ChatscreenState extends State<Chatscreen> {
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
+                                        color: Colors.grey.shade100,
                                         border: Border.all(
                                             color: Colors.grey.shade100,
                                             width: 5)),
@@ -515,13 +603,18 @@ class _ChatscreenState extends State<Chatscreen> {
         controller: _messageController,
         textInputAction: TextInputAction.newline,
         decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(23),
+            ),
             prefixIcon: IconButton(
-                onPressed: () => imagePick(), icon: Icon(Icons.image)),
+                onPressed: () => imagePick(),
+                icon: Icon(Icons.add_photo_alternate_rounded)),
             prefixIconColor: Colors.black,
             suffixIconColor: Colors.black,
             hintText: 'Message',
-            focusColor: Colors.black,
-            hoverColor: Colors.black,
+            focusColor: Colors.orange,
+            // hoverColor: Colors.black,
+
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(23)),
             suffixIcon: IconButton(
                 onPressed: () {

@@ -19,9 +19,11 @@ class _ListView22State extends State<ListView22> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<ListProvider>(context, listen: false).get_list('political');
     });
+    // _scroll.addListener(_scrollListener);
   }
 
-  @override
+  final _scroll = ScrollController();
+
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
     final h = MediaQuery.sizeOf(context).height;
@@ -47,20 +49,32 @@ class _ListView22State extends State<ListView22> {
                 ],
               ),
             ))
-          : Padding(
-              padding: EdgeInsets.symmetric(horizontal: w * 0.02),
-              child: Center(
-                child: Expanded(
+          : Column(
+              children: [
+                Container(
+                  child: Text(
+                    'Politics',
+                    style: GoogleFonts.kanit(
+                        color: const Color.fromARGB(255, 45, 42, 42),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30),
+                  ),
+                ),
+                
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: w * 0.02),
                   child: Container(
-                    height: h * 1.85,
+                    height: h * 0.18 * res.number!,
                     child: ListView.builder(
-                      
+                        controller: _scroll,
                         scrollDirection: Axis.vertical,
-                        itemCount: res.number,
+                        itemCount: (res.number!),
                         physics: NeverScrollableScrollPhysics(),
                         // shrinkWrap: true,
                         itemBuilder: (cotext, index) {
                           final _news = res.news![index];
+
+                          // _scrollListener();
                           return InkWell(
                             onTap: () {
                               Navigator.push(
@@ -126,7 +140,7 @@ class _ListView22State extends State<ListView22> {
                         }),
                   ),
                 ),
-              ),
+              ],
             );
     });
   }

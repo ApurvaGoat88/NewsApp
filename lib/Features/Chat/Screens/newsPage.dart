@@ -7,20 +7,23 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
 
-class NewsScreen extends StatefulWidget {
-  const NewsScreen({super.key, required this.index});
-  final index;
+class NewsScreen1 extends StatefulWidget {
+  const NewsScreen1({super.key, required this.id , required this.title ,required this.text, required this.url});
+  final id;
+  final text ;
+  final title ;
+  final url ;
 
   @override
-  State<NewsScreen> createState() => _NewsScreenState();
+  State<NewsScreen1> createState() => _NewsScreen1State();
 }
 
-class _NewsScreenState extends State<NewsScreen> {
+class _NewsScreen1State extends State<NewsScreen1> {
   @override
   int max_line = 5;
   Widget build(BuildContext context) {
     return Consumer<NewsProvider>(builder: (context, value, child) {
-      final res = value.news;
+      // final res = value.news;
       final h = MediaQuery.sizeOf(context).height;
       final w = MediaQuery.sizeOf(context).width;
       return Scaffold(
@@ -28,7 +31,7 @@ class _NewsScreenState extends State<NewsScreen> {
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           title: Text(
-            res.news![widget.index].title.toString(),
+            widget.title ,
             maxLines: 1,
             overflow: TextOverflow.fade,
           ),
@@ -43,7 +46,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
-                      res.news![widget.index].title.toString(),
+                      widget.title,
                       style: GoogleFonts.poppins(
                           color: Colors.black,
                           fontSize: 20,
@@ -69,49 +72,20 @@ class _NewsScreenState extends State<NewsScreen> {
                               color: Colors.black,
                               size: 40,
                             ),
-                            imageUrl: res.news![widget.index].image.toString(),
+                            imageUrl: widget.url,
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Text(
-                          'Source -',
-                          style: GoogleFonts.poppins(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(),
-                        child: Text(
-                          res.news![widget.index].author.toString() +
-                              ',' +
-                              res.news![widget.index].sourceCountry
-                                  .toString()
-                                  .toUpperCase(),
-                          style: GoogleFonts.poppins(
-                              color: Colors.blue,
-                              fontSize: 20,
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
+                
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
                         Text(
-                          res.news![widget.index].text.toString(),
+                          widget.text,
                           style: GoogleFonts.poppins(
                               color: Colors.black, fontSize: 18),
                           maxLines: max_line,

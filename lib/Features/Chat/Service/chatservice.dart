@@ -3,27 +3,35 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:news_project/model/MessageModel.dart';
+import 'package:news_project/Model/news_model.dart';
 
 class ChatService extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   final _store = FirebaseFirestore.instance;
   String current = '';
-Future<void> clearChat(String uid ,String uid2) async {
-   List<String> ids = [uid, uid2];
+  Future<void> clearChat(String uid, String uid2) async {
+    List<String> ids = [uid, uid2];
     ids.sort();
     String roomId = ids.join("-");
-  try {
-    await _store.collection('ChatRoom').doc(roomId).collection('Messages').get().then((querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        doc.reference.delete();
+    try {
+      await _store
+          .collection('ChatRoom')
+          .doc(roomId)
+          .collection('Messages')
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.delete();
+        });
       });
-    });
-  } catch (e) {
-    print('Error deleting messages: $e');
+    } catch (e) {
+      print('Error deleting messages: $e');
+    }
   }
-}
 
-  void sendMessage(String Remail, String message, String imgUrl) async {
+  void sendMessage(
+      String Remail, String message, String imgUrl,  news) async {
+    news = news as News;
     final currentuserId = _auth.currentUser!.uid;
     final now = DateTime.now();
     final currentUserEmail = _auth.currentUser!.email.toString();
@@ -37,7 +45,12 @@ Future<void> clearChat(String uid ,String uid2) async {
         senderld: currentuserId,
         timestamp: time,
         date: now11.toString(),
-        imgUrl: imgUrl);
+        imgUrl: imgUrl,
+        id: news.id.toString(),
+        title: news.title.toString(),
+        text: news.text.toString(),
+        image: news.image.toString(),
+        url: news.url.toString());
 
     List<String> ids = [currentuserId, Remail];
     ids.sort();
@@ -53,8 +66,11 @@ Future<void> clearChat(String uid ,String uid2) async {
     List<String> ids = [uid, uid2];
     ids.sort();
     String room = ids.join("-");
-    final doc =await _store.collection('ChatRoom').doc(room).collection('Messages').get();
-    
+    final doc = await _store
+        .collection('ChatRoom')
+        .doc(room)
+        .collection('Messages')
+        .get();
   }
 
   Stream<QuerySnapshot> getMessages(String uid2, String uid1) {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -19,6 +20,25 @@ class StartPage extends StatefulWidget {
 }
 
 class _StartPageState extends State<StartPage> {
+   Future<String?> getImageUrlForUser() async {
+    final em = FirebaseAuth.instance.currentUser!.email.toString();
+
+    final userSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('email', isEqualTo: em)
+        .get();
+
+    if (userSnapshot.docs.isNotEmpty) {
+      final userData = userSnapshot.docs.first.data() as Map<String, dynamic>;
+
+      final imageUrl = userData['imgUrl'] as String?;
+      print(imageUrl);
+      return imageUrl;
+    } else {
+      // Handle the case when the user's document is not found
+      return null;
+    }
+  }
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override

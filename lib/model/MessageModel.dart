@@ -8,6 +8,11 @@ class Message {
   final Timestamp timestamp;
   final String date;
   final String imgUrl;
+  final String id;
+  final String title;
+  final String text;
+  final String url;
+  final String image;
   Message(
       {required this.receiverId,
       required this.message,
@@ -15,7 +20,12 @@ class Message {
       required this.senderld,
       required this.timestamp,
       required this.date,
-      required this.imgUrl});
+      required this.imgUrl,
+      required this.id,
+      required this.title,
+      required this.text,
+      required this.url,
+      required this.image});
 
   Map<String, dynamic> toMAP() {
     return {
@@ -25,7 +35,12 @@ class Message {
       "message": message,
       "timeStamp": timestamp,
       "date": date,
-      'imgUrl': imgUrl
+      'imgUrl': imgUrl,
+      'id': id,
+      'title': title,
+      'text': text,
+      'url': url,
+      'image': image
     };
   }
 }

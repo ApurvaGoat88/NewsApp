@@ -5,12 +5,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_project/Features/Boomarks/Providers/Bookmarkprovider.dart';
+import 'package:news_project/Features/Chat/Service/chatservice.dart';
+// import 'package:news_project/Features/HomePage/Provider/env_news.dart';
 import 'package:news_project/Features/HomePage/Provider/news_provider.dart';
 import 'package:news_project/Features/HomePage/Screens/Astrolist.dart';
+// import 'package:news_project/Features/News%20Page/Screens/AstroScreen.dart';
 import 'package:news_project/Features/News%20Page/Screens/new_screen.dart';
 import 'package:news_project/Features/HomePage/Screens/list_env.dart';
 import 'package:news_project/Features/HomePage/Screens/listview.dart';
+// import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:news_project/model/CommentsModel.dart';
+import 'package:news_project/model/news_model.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -23,6 +29,17 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
+  List<Widget> _list = [
+    const ListView22(),
+    const ListView33(),
+    const ListView4()
+  ];
+  final _scroll = ItemScrollController();
+  void scrollToIndex(int index) {
+    print('calld');
+    _scroll.scrollTo(index: index, duration: const Duration(seconds: 2));
+  }
+
   TextEditingController _controller = TextEditingController();
   late final AnimationController _cont;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -34,6 +51,8 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
     // TODO: implement initState
     super.initState();
     _cont = AnimationController(vsync: this);
+    WidgetsBinding.instance
+        .addPostFrameCallback((timeStamp) => scrollToIndex(0));
   }
 
   final _comment = TextEditingController();
@@ -46,7 +65,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
     'Business',
     'Science & Tech'
   ];
-
+  final List items = ['Political', 'Environment', 'Astrology'];
   void addComment(int? id, String comments, user) async {
     getComments(id).then((value) {
       print(value);
@@ -68,7 +87,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
         {'comment': comments, 'user': user}
       ]
     }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Comment added, Please refreash'))));
+        const SnackBar(content: Text('Comment added, Please refresh'))));
   }
 
   Future<bool> doesDocumentExist(int? id) async {
@@ -276,6 +295,152 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
     });
   }
 
+  Widget _usersList(context, selected, news) {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection('Users').snapshots(),
+      builder: (context, snapshot) {
+        final w = MediaQuery.sizeOf(context).width;
+        final h = MediaQuery.sizeOf(context).height;
+        final userEmail = FirebaseAuth.instance.currentUser!.email;
+        if (snapshot.hasError) {
+          return const Text('error');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: SpinKitWanderingCubes(
+              color: Colors.orange,
+              size: 40,
+            ),
+          );
+        } else {
+          return Container(
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25)),
+                    color: Colors.white,
+                  ),
+                  height: 20,
+                ),
+                Container(
+                  color: Colors.white,
+                  child: Divider(
+                    color: Colors.black,
+                    // color: Colors.orange.shade100,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    width: w,
+                    child: ListView(
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        children: snapshot.data!.docs.map((e) {
+                          final data = e.data()! as Map<String, dynamic>;
+                          if (data['email'] != userEmail) {
+                            return Container(
+                              height: h * 0.12,
+                              width: w,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Container(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 40,
+                                            backgroundImage:
+                                                NetworkImage(data['imgUrl']),
+                                          ),
+                                          SizedBox(
+                                            width: w * 0.05,
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Container(
+                                                width: w * 0.6,
+                                                child: Text(
+                                                  data['email']
+                                                      .toString()
+                                                      .split('@')[0],
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: GoogleFonts.ubuntu(
+                                                      fontSize: 20),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: w * 0.02,
+                                              ),
+                                              Text(
+                                                data['bio'],
+                                                style: GoogleFonts.ubuntu(
+                                                    color: Colors.grey.shade500,
+                                                    fontSize: 10),
+                                              ),
+                                            ],
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              print('send');
+                                              ChatService().sendMessage(
+                                                  data['uid'], '', '', news);
+                                              Navigator.pop(context);
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text('Sent to ' +
+                                                          data['email']
+                                                              .toString()
+                                                              .split('@')[0]
+                                                              .toString())));
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                child: Text(
+                                                  'Send',
+                                                  style: GoogleFonts.ubuntu(
+                                                      color: Colors.blue),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Divider()
+                                ],
+                              ),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        }).toList()),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
@@ -286,6 +451,13 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
       print(res.news);
       return value.news.news == null
           ? Scaffold(
+              //     floatingActionButtonLocation:
+              //         FloatingActionButtonLocation.centerTop,
+              //     floatingActionButton: FloatingActionButton(
+              //       onPressed: () => scrollToIndex(2),
+              //       child: Icon(Icons.add),
+              //       foregroundColor: Colors.orange.shade200,
+              //     ),
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
@@ -371,43 +543,51 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     Container(
-                      height: h * 0.08,
+                      height: h * 0.06,
                       width: w,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            controller: ScrollController(),
-                            itemCount: _cate.length,
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {
-                                  cate = _cate[index];
-                                  value.get_news(cate);
+                      // color: Colors.red,
+                      child: DefaultTabController(
+                        length: _cate.length,
+                        child: Column(
+                          children: [
+                            Container(
+                              height: h * 0.05,
+                              child: TabBar(
+                                isScrollable: true,
+                                onTap: (value445) {
+                                  cate = _cate[value445];
+                                  value.get_news(_cate[value445]);
 
                                   setState(() {});
                                 },
-                                child: Container(
-                                  height: h * 0.11,
-                                  padding: const EdgeInsets.only(
-                                      top: 3, bottom: 3, left: 10, right: 10),
-                                  margin: const EdgeInsets.all(5),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                      color: cate == _cate[index]
-                                          ? Colors.orange.shade400
-                                          : Colors.grey.shade200,
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: Text(
-                                    _cate[index].toString(),
-                                    style: GoogleFonts.ubuntu(
-                                        fontSize: h * 0.018,
-                                        fontWeight: FontWeight.normal),
-                                  ),
-                                ),
-                              );
-                            }),
+                                labelColor: Colors.orange,
+                                unselectedLabelColor: Colors.black,
+                                indicatorColor: Colors.orange,
+                                tabs: _cate.map((category) {
+                                  return Tab(
+                                    child: Container(
+                                      padding: const EdgeInsets.only(
+                                          left: 5, right: 5),
+                                      margin: const EdgeInsets.all(5),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        category.toString(),
+                                        style: GoogleFonts.ubuntu(
+                                          fontSize: h * 0.018,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     if (value.isLoading)
@@ -422,7 +602,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                           height: h * 0.5,
                           child: CarouselSlider(
                             options: CarouselOptions(
-                                autoPlayInterval: const Duration(seconds: 3),
+                                autoPlayInterval: const Duration(seconds: 5),
                                 height: h * 0.5,
                                 viewportFraction: 1,
                                 autoPlay: true),
@@ -476,7 +656,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                           Positioned(
                                             bottom: h * 0.01,
                                             child: Container(
-                                              height: h * 0.2,
+                                              height: h * 0.22,
                                               width: w * 0.9,
                                               child: Opacity(
                                                 opacity: 0.8,
@@ -561,6 +741,51 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                                                         : const Icon(
                                                                             Icons.bookmark_add_outlined),
                                                                   ),
+                                                                  IconButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      print(
+                                                                          'bottomSheet Called ');
+                                                                      showModalBottomSheet(
+                                                                          backgroundColor: Colors
+                                                                              .transparent,
+                                                                          isDismissible:
+                                                                              true,
+                                                                          enableDrag:
+                                                                              true,
+                                                                          showDragHandle:
+                                                                              true,
+                                                                          isScrollControlled:
+                                                                              true,
+                                                                          barrierColor: const Color
+                                                                              .fromARGB(
+                                                                              255,
+                                                                              52,
+                                                                              51,
+                                                                              51),
+                                                                          barrierLabel:
+                                                                              'Share',
+                                                                          context:
+                                                                              context,
+                                                                          builder:
+                                                                              (context) {
+                                                                            bool
+                                                                                se =
+                                                                                true;
+                                                                            return Container(
+                                                                                height: h * 0.8,
+                                                                                child: _usersList(context, se, _news));
+                                                                          });
+                                                                    },
+                                                                    icon: Image
+                                                                        .asset(
+                                                                      'assets/share-post.png',
+                                                                      height:
+                                                                          25,
+                                                                    ),
+                                                                    iconSize:
+                                                                        10,
+                                                                  )
                                                                 ],
                                                               );
                                                             },
@@ -586,7 +811,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                     ),
                     Container(
                       color: const Color.fromARGB(255, 255, 253, 253),
-                      height: h * 5.96,
+                      // height: h * 2,
                       child: Column(
                         children: [
                           Row(
@@ -601,7 +826,67 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                 ),
                               ),
                               // GestureDetector(
-                              //     onTap: () {},
+                              //     onTap: () {
+                              //       showDialog(
+                              //         context: context,
+                              //         builder: (context) {
+                              //           return Container(
+                              //             height: 100,
+                              //             width: 100,
+                              //             child: AlertDialog(
+                              //               // shadowColor: Colors.orange,
+                              //               // backgroundColor: Colors.grey,
+                              //               content: Container(
+                              //                 width: w * 0.5,
+                              //                 height: h * 0.17,
+                              //                 color: Colors.white,
+                              //                 child: Center(
+                              //                   child: ListView.builder(
+                              //                     physics:
+                              //                         NeverScrollableScrollPhysics(),
+                              //                     itemBuilder:
+                              //                         (context, index) {
+                              //                       return GestureDetector(
+                              //                           onTap: () {
+                              //                             print(index);
+                              //                             Navigator.pop(
+                              //                                 context);
+                              //                             scrollToIndex(index);
+                              //                           },
+                              //                           child: Container(
+                              //                             margin:
+                              //                                 EdgeInsets.all(5),
+                              //                             padding:
+                              //                                 EdgeInsets.all(6),
+                              //                             alignment:
+                              //                                 Alignment.center,
+                              //                             decoration: BoxDecoration(
+                              //                                 borderRadius:
+                              //                                     BorderRadius
+                              //                                         .circular(
+                              //                                             16),
+                              //                                 border: Border.all(
+                              //                                     color: Colors
+                              //                                         .orange
+                              //                                         .shade200)),
+                              //                             child: Text(
+                              //                               items[index],
+                              //                               style: GoogleFonts
+                              //                                   .ubuntu(
+                              //                                 fontSize: 20,
+                              //                               ),
+                              //                             ),
+                              //                           ));
+                              //                     },
+                              //                     itemCount: 3,
+                              //                   ),
+                              //                 ),
+                              //               ),
+                              //             ),
+                              //           );
+                              //         },
+                              //       );
+                              //     },
                               //     child: Container(
                               //       margin: EdgeInsets.only(right: w * 0.02),
                               //       child: Padding(
@@ -616,39 +901,27 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                               //     ))
                             ],
                           ),
-                          Container(
-                            child: Text(
-                              'Politics',
-                              style: GoogleFonts.kanit(
-                                  color: const Color.fromARGB(255, 45, 42, 42),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30),
-                            ),
-                          ),
-                          const ListView22(),
-                          Container(
-                            child: Text(
-                              'Environment',
-                              style: GoogleFonts.kanit(
-                                  color: const Color.fromARGB(255, 23, 21, 21),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30),
-                            ),
-                          ),
-                          const ListView33(),
-                          Container(
-                            child: Text(
-                              'Astrology',
-                              style: GoogleFonts.kanit(
-                                  color: const Color.fromARGB(255, 23, 21, 21),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30),
-                            ),
-                          ),
-                          const ListView4(),
                         ],
                       ),
                     ),
+                    // SizedBox(
+                    //   height: h * 0.02,
+                    // ),
+                    // Container(
+                    //   color: Colors.red,
+                    //   height: h * 0.02,
+                    // ),
+                    Container(
+                      height: h * 1.9 * _list.length,
+                      child: ScrollablePositionedList.builder(
+                        itemScrollController: _scroll,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return _list[index];
+                        },
+                        itemCount: _list.length,
+                      ),
+                    )
                   ],
                 ),
               ),
