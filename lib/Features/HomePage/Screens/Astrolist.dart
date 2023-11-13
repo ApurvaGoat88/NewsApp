@@ -21,17 +21,9 @@ class _ListView4State extends State<ListView4> {
   @override
   void initState() {
     super.initState();
-    _controller.addListener(_scrollListener);
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       Provider.of<AstroProvider>(context, listen: false).get_list('Astrology');
     });
-  }
-
-  void _scrollListener() {
-    if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-      // Load more items when reaching the end of the list
-      Provider.of<AstroProvider>(context, listen: false).get_list('india');
-    }
   }
 
   @override
@@ -77,17 +69,20 @@ class _ListView4State extends State<ListView4> {
                   padding: EdgeInsets.symmetric(horizontal: w * 0.02),
                   child: Center(
                     child: Container(
-                      height: h * .18 * res.number!,
+                      height: h * .18 * res.available!,
                       child: ListView.builder(
                         controller: _controller,
                         scrollDirection: Axis.vertical,
-                        itemCount: res.number!,
+                        itemCount: res.available!,
                         physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           final _news = res.news![index];
                           return InkWell(
                             onTap: () {
-                              Get.to(NewsScreenofAstro(index: index));
+                              Get.to(NewsScreenofAstro(
+                                index: index,
+                                id: _news.id,
+                              ));
                             },
                             child: Card(
                               elevation: 10,

@@ -51,7 +51,7 @@ class _ChatpageState extends State<Chatpage> {
         backgroundColor: Colors.orange.shade100,
         appBar: AppBar(
           title: Text(
-            'Messenger',
+            'Flash Chat',
             style:
                 GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 25),
           ),

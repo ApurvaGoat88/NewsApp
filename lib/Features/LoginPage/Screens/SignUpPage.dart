@@ -2,12 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_project/Features/LoginPage/Screens/LoginPage.dart';
 import 'package:news_project/Features/HomePage/Screens/homepage.dart';
 import 'package:news_project/Features/HomePage/Screens/navbar.dart';
+import 'package:news_project/common/firebaseErrorHandling.dart';
+import 'package:news_project/common/snackbar.dart';
 import 'package:news_project/model/UserModel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -32,6 +35,12 @@ class _SignUpPageState extends State<SignUpPage> {
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
   Future<User?> _handleGoogleSignIn(UserModel usermodel) async {
+    showDialog(
+        context: context,
+        builder: ((context) => SpinKitWanderingCubes(
+              color: Colors.black,
+              size: 50,
+            )));
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -63,8 +72,12 @@ class _SignUpPageState extends State<SignUpPage> {
           print('$e');
         }
       }
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       print(e);
+      Snack()
+          .show(ErrorHandling().getMessageFromErrorCode(e.toString()), context);
+    } finally {
+      Navigator.pop(context);
     }
   }
 
@@ -72,6 +85,14 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Future<String> uploadFile(File file, String name) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SpinKitWanderingCubes(
+            color: Colors.black,
+            size: 50,
+          );
+        });
     print('upload file called');
     String url = '';
     String filename = name;
@@ -80,6 +101,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final upload = firebaseStorageRef.putFile(file);
     final task = await upload.whenComplete(() => null);
     task.ref.getDownloadURL().then((value) {
+      Navigator.pop(context);
       url = value.toString();
 
       setState(() {
@@ -110,6 +132,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final _pass = TextEditingController();
   Future<User?> _registerWithEmailAndPassword(UserModel useree) async {
+    showDialog(
+        context: context,
+        builder: ((context) => SpinKitWanderingCubes(
+              color: Colors.black,
+              size: 50,
+            )));
     if (_formKey.currentState!.validate()) {
       try {
         UserCredential userCredential =
@@ -124,9 +152,7 @@ class _SignUpPageState extends State<SignUpPage> {
               .collection("Users")
               .doc(userCredential.user!.email!.split('@')[0].toString())
               .set(useree.toJson());
-        } catch (e) {
-          print('$e');
-        }
+        } on FirebaseAuthException catch (e) {}
 
         User? user = userCredential.user;
 
@@ -134,7 +160,11 @@ class _SignUpPageState extends State<SignUpPage> {
         return user;
         // User account created successfully.
       } on FirebaseAuthException catch (e) {
-        print(e.toString());
+        print(e);
+        Snack().show(
+            ErrorHandling().getMessageFromErrorCode(e.toString()), context);
+      } finally {
+        Navigator.pop(context);
       }
     }
   }
@@ -176,30 +206,51 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                       ),
-                      Card(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                await uploadImage();
-                              },
-                              child: CircleAvatar(
+                      GestureDetector(
+                        onTap: () async {
+                          await uploadImage();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  offset: Offset(0.0, 0.50), //(x,y)
+                                  blurRadius: 6.0,
+                                ),
+                              ],
+                              border: Border.all(color: Colors.grey.shade200)),
+                          width: w * 0.9,
+                          height: h * 0.07,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
                                   backgroundColor: Colors.grey.shade200,
-                                  radius: 30,
-                                  child: Icon(
-                                    Icons.add_a_photo_outlined,
-                                    color: Colors.black,
-                                    size: 20,
-                                  )),
-                            ),
-                            SizedBox(
-                              width: w * 0.1,
-                            ),
-                            Container(
-                              child: Text('Upload a Profile picture'),
-                            )
-                          ],
+                                  radius: 35,
+                                  backgroundImage: imgUrl == ''
+                                      ? null
+                                      : NetworkImage(imgUrl),
+                                  child: imgUrl == ''
+                                      ? Icon(
+                                          Icons.add_a_photo_outlined,
+                                          color: Colors.black,
+                                          size: 20,
+                                        )
+                                      : null),
+                              SizedBox(
+                                width: w * 0.1,
+                              ),
+                              Container(
+                                child: Text(
+                                  'Upload a Profile picture',
+                                  style: GoogleFonts.ubuntu(color: black),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -396,9 +447,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           child: Container(
                             decoration: BoxDecoration(
                                 color: Colors.grey.shade50,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  const BoxShadow(
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: const [
+                                  BoxShadow(
                                     color: Colors.grey,
                                     offset: Offset(0.0, 0.50), //(x,y)
                                     blurRadius: 6.0,
@@ -406,7 +457,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ],
                                 border:
                                     Border.all(color: Colors.grey.shade200)),
-                            width: w * 0.9,
+                            width: w * 0.8,
                             height: h * 0.07,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

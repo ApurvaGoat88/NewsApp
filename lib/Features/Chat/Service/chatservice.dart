@@ -29,37 +29,67 @@ class ChatService extends ChangeNotifier {
     }
   }
 
-  void sendMessage(
-      String Remail, String message, String imgUrl,  news) async {
-    news = news as News;
-    final currentuserId = _auth.currentUser!.uid;
-    final now = DateTime.now();
-    final currentUserEmail = _auth.currentUser!.email.toString();
-    final time = Timestamp.now();
-    final now11 = DateFormat("dd-MM-yyyy h-mma").format(now);
-    print(now11);
-    Message newMessage = Message(
-        receiverId: Remail,
-        message: message,
-        senderEmail: currentUserEmail,
-        senderld: currentuserId,
-        timestamp: time,
-        date: now11.toString(),
-        imgUrl: imgUrl,
-        id: news.id.toString(),
-        title: news.title.toString(),
-        text: news.text.toString(),
-        image: news.image.toString(),
-        url: news.url.toString());
+  void sendMessage(String Remail, String message, String imgUrl, news) async {
+    if (news != '') {
+      news = news as News;
+      final currentuserId = _auth.currentUser!.uid;
+      final now = DateTime.now();
+      final currentUserEmail = _auth.currentUser!.email.toString();
+      final time = Timestamp.now();
+      final now11 = DateFormat("dd-MM-yyyy h-mma").format(now);
+      print(now11);
+      Message newMessage = Message(
+          receiverId: Remail,
+          message: message,
+          senderEmail: currentUserEmail,
+          senderld: currentuserId,
+          timestamp: time,
+          date: now11.toString(),
+          imgUrl: imgUrl,
+          id: news.id.toString(),
+          title: news.title.toString(),
+          text: news.text.toString(),
+          image: news.image.toString(),
+          url: news.url.toString());
 
-    List<String> ids = [currentuserId, Remail];
-    ids.sort();
-    String room = ids.join("-");
-    await _store
-        .collection('ChatRoom')
-        .doc(room)
-        .collection('Messages')
-        .add(newMessage.toMAP());
+      List<String> ids = [currentuserId, Remail];
+      ids.sort();
+      String room = ids.join("-");
+      await _store
+          .collection('ChatRoom')
+          .doc(room)
+          .collection('Messages')
+          .add(newMessage.toMAP());
+    } else {
+      final currentuserId = _auth.currentUser!.uid;
+      final now = DateTime.now();
+      final currentUserEmail = _auth.currentUser!.email.toString();
+      final time = Timestamp.now();
+      final now11 = DateFormat("dd-MM-yyyy h-mma").format(now);
+      print(now11);
+      Message newMessage = Message(
+          receiverId: Remail,
+          message: message,
+          senderEmail: currentUserEmail,
+          senderld: currentuserId,
+          timestamp: time,
+          date: now11.toString(),
+          imgUrl: imgUrl,
+          id: 'null',
+          title: 'null',
+          text: 'null',
+          image: 'null',
+          url: 'null');
+
+      List<String> ids = [currentuserId, Remail];
+      ids.sort();
+      String room = ids.join("-");
+      await _store
+          .collection('ChatRoom')
+          .doc(room)
+          .collection('Messages')
+          .add(newMessage.toMAP());
+    }
   }
 
   void delete(String uid, String uid2) async {

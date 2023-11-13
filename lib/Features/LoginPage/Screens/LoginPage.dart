@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_project/Features/LoginPage/Screens/SignUpPage.dart';
 // import 'package:news_project/Features/HomePage/Screens/homepage.dart';
 import 'package:news_project/Features/HomePage/Screens/navbar.dart';
+import 'package:news_project/common/firebaseErrorHandling.dart';
+import 'package:news_project/common/snackbar.dart';
 import 'package:news_project/model/UserModel.dart';
 
 class LoginPage extends StatefulWidget {
@@ -23,8 +26,29 @@ class _LoginPageState extends State<LoginPage> {
   final orange = const Color(0xFFFA800F);
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('Users');
+
+  Future<bool> checkIfDocumentExists(String id) async {
+    DocumentSnapshot documentSnapshot = await users.doc(id).get();
+
+    if (documentSnapshot.exists) {
+      print('exists');
+
+      return true;
+    } else {
+      print('Document does not exist.');
+      return false;
+    }
+  }
 
   Future<User?> _handleGoogleSignIn() async {
+    showDialog(
+        context: context,
+        builder: (context) => SpinKitWanderingCubes(
+              color: Colors.black,
+              size: 50,
+            ));
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -45,10 +69,19 @@ class _LoginPageState extends State<LoginPage> {
             username: user.displayName.toString(),
             uid: user.uid,
             imgUrl: user.photoURL.toString());
-        await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(user.email.toString().split('@')[0])
-            .set(userdata.toJson());
+        checkIfDocumentExists(user!.email.toString().split('@')[0])
+            .then((value) {
+          if (value) {
+            print('User already Exist');
+          } else {
+            print('NOT EXIST');
+            FirebaseFirestore.instance
+                .collection('Users')
+                .doc(user.email.toString().split('@')[0])
+                .set(userdata.toJson());
+          }
+        });
+        //
 
         print('User signed in with Google: ${user.displayName}');
         return user;
@@ -56,6 +89,8 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (error) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(error.toString())));
+    } finally {
+      Navigator.pop(context);
     }
   }
 
@@ -71,7 +106,9 @@ class _LoginPageState extends State<LoginPage> {
         print(user!.email.toString());
         return user;
       } catch (e) {
-        print(e.toString());
+        print(e);
+        Snack().show(
+            ErrorHandling().getMessageFromErrorCode(e.toString()), context);
       }
     }
   }
@@ -314,7 +351,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           TextButton(
                               onPressed: () {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>

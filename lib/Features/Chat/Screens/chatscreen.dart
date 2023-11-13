@@ -1,6 +1,7 @@
 import 'dart:io';
 // import 'dart:js';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -62,7 +63,7 @@ class _ChatscreenState extends State<Chatscreen> {
         widget.Rid,
         _messageController.text.toString(),
         imgUrl,
-        news,
+        '',
       );
     }
     _messageController.clear();
@@ -298,7 +299,8 @@ class _ChatscreenState extends State<Chatscreen> {
                                     alignment: Alignment.bottomCenter,
                                     decoration: BoxDecoration(
                                         image: DecorationImage(
-                                            image: NetworkImage(data['image']),
+                                            image: CachedNetworkImageProvider(
+                                                data['image']),
                                             fit: BoxFit.cover),
                                         color: Colors.orange.shade50,
                                         border: Border.all(
@@ -309,6 +311,7 @@ class _ChatscreenState extends State<Chatscreen> {
                                     child: Opacity(
                                       opacity: 0.8,
                                       child: Container(
+                                        margin: EdgeInsets.only(bottom: 10),
                                         decoration: BoxDecoration(
                                             boxShadow: const [
                                               BoxShadow(
@@ -478,7 +481,8 @@ class _ChatscreenState extends State<Chatscreen> {
                                     alignment: Alignment.bottomCenter,
                                     decoration: BoxDecoration(
                                         image: DecorationImage(
-                                            image: NetworkImage(data['image']),
+                                            image: CachedNetworkImageProvider(
+                                                data['image']),
                                             fit: BoxFit.cover),
                                         color: Colors.grey.shade50,
                                         border: Border.all(
@@ -489,6 +493,7 @@ class _ChatscreenState extends State<Chatscreen> {
                                     child: Opacity(
                                       opacity: 0.8,
                                       child: Container(
+                                        margin: EdgeInsets.only(bottom: 10),
                                         decoration: BoxDecoration(
                                             boxShadow: const [
                                               BoxShadow(

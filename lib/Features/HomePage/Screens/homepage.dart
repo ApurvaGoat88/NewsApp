@@ -908,17 +908,9 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                     //   color: Colors.red,
                     //   height: h * 0.02,
                     // ),
-                    Container(
-                      height: h * 1.9 * _list.length,
-                      child: ScrollablePositionedList.builder(
-                        itemScrollController: _scroll,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return _list[index];
-                        },
-                        itemCount: _list.length,
-                      ),
-                    )
+                    _list[0],
+                    _list[1],
+                    _list[2],
                   ],
                 ),
               ),

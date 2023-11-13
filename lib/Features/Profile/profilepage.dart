@@ -93,6 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onTap: () async {
                   await signOut().whenComplete(() {
                     Navigator.pop(context);
+
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => StartPage()));
                   });
