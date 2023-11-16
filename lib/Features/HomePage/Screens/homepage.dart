@@ -370,7 +370,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                                   data['email']
                                                       .toString()
                                                       .split('@')[0],
-                                                  maxLines: 1,
+                                                  maxLines: 2,
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   style: GoogleFonts.ubuntu(
@@ -380,11 +380,18 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                               SizedBox(
                                                 height: w * 0.02,
                                               ),
-                                              Text(
-                                                data['bio'],
-                                                style: GoogleFonts.ubuntu(
-                                                    color: Colors.grey.shade500,
-                                                    fontSize: 10),
+                                              Container(
+                                                width: w * 0.6,
+                                                child: Text(
+                                                  data['bio'],
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: GoogleFonts.ubuntu(
+                                                      color:
+                                                          Colors.grey.shade500,
+                                                      fontSize: 10),
+                                                ),
                                               ),
                                             ],
                                           ),

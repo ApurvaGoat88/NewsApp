@@ -652,10 +652,22 @@ class _ProfilePageState extends State<ProfilePage> {
                               Text(userdata.email..toString(),
                                   style: GoogleFonts.ubuntu(
                                       color: Colors.grey.shade700)),
-                              Text(userdata.bio,
-                                  style: GoogleFonts.ubuntu(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade500))
+                              SizedBox(
+                                height: h * 0.03,
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  height: h * 0.2,
+                                  width: w * 0.6,
+                                  // color: Colors.red,
+                                  child: Text(userdata.bio,
+                                      softWrap: true,
+                                      style: GoogleFonts.ubuntu(
+                                          fontSize: 15,
+                                          color: Colors.grey.shade500)),
+                                ),
+                              ),
                             ],
                           ),
                         )

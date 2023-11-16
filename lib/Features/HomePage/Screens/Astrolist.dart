@@ -69,11 +69,11 @@ class _ListView4State extends State<ListView4> {
                   padding: EdgeInsets.symmetric(horizontal: w * 0.02),
                   child: Center(
                     child: Container(
-                      height: h * .18 * res.available!,
+                      height: h * .18 * res.number!,
                       child: ListView.builder(
                         controller: _controller,
                         scrollDirection: Axis.vertical,
-                        itemCount: res.available!,
+                        itemCount: res.number!,
                         physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           final _news = res.news![index];
