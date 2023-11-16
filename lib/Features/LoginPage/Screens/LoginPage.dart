@@ -68,8 +68,10 @@ class _LoginPageState extends State<LoginPage> {
             email: user!.email.toString(),
             username: user.displayName.toString(),
             uid: user.uid,
-            imgUrl: user.photoURL.toString());
-        checkIfDocumentExists(user!.email.toString().split('@')[0])
+            imgUrl: user.photoURL.toString(),
+            linkedin: '',
+            instagram: '');
+        checkIfDocumentExists(user.email.toString().split('@')[0])
             .then((value) {
           if (value) {
             print('User already Exist');

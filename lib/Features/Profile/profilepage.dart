@@ -6,13 +6,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:news_project/Features/LoginPage/Screens/startpage.dart';
+import 'package:news_project/common/snackbar.dart';
 import 'package:news_project/model/UserModel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -23,6 +26,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final _bio = TextEditingController();
+  final _insta = TextEditingController();
+  final _linked = TextEditingController();
   void showupdateopt() {
     Get.defaultDialog(
         title: "Update User Info",
@@ -35,18 +40,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   labelText: "Update Bio",
                   labelStyle:
                       GoogleFonts.ubuntu(color: Colors.black, fontSize: 20),
-                  border: OutlineInputBorder(),
-                  enabledBorder: OutlineInputBorder(),
-                  disabledBorder: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder()),
+                  border: const OutlineInputBorder(),
+                  enabledBorder: const OutlineInputBorder(),
+                  disabledBorder: const OutlineInputBorder(),
+                  focusedBorder: const OutlineInputBorder()),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             // TextField(
             //     controller: email,
             //     decoration: InputDecoration(labelText: "Email")),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -57,12 +62,21 @@ class _ProfilePageState extends State<ProfilePage> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(23))),
                   onPressed: () {
-                    update(_bio.text.toString());
+                    update(_bio.text.toString(), _linked.text, _insta.text);
                   },
-                  child: Text("Save")),
+                  child: const Text("Save")),
             )
           ]),
         ));
+  }
+
+  Future<void> _launchInBrowser(Uri url) async {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   void showAlertBox() {
@@ -94,8 +108,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   await signOut().whenComplete(() {
                     Navigator.pop(context);
 
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => StartPage()));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StartPage()));
                   });
                 },
               ),
@@ -114,23 +130,42 @@ class _ProfilePageState extends State<ProfilePage> {
     print('sign out');
   }
 
-  void update(String bio) async {
+  void update(String bio, String link, String insta) async {
     final currentUser22 = FirebaseAuth.instance.currentUser;
+    if (link.isEmpty && insta.isEmpty) {
+      final DocumentReference documentRef = FirebaseFirestore.instance
+          .collection('Users')
+          .doc(currentUser22!.email!.split('@')[0].toString());
 
-    final DocumentReference documentRef = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(currentUser22!.email!.split('@')[0].toString());
+      // Update specific fields in the document
 
-    // Update specific fields in the document
+      try {
+        biocontroller.clear();
+        await documentRef.update({
+          'bio': bio,
+        }).whenComplete(() => Navigator.pop(context));
+        print('Document successfully updated');
+      } catch (e) {
+        print('Error updating document: $e');
+      }
+    } else {
+      final DocumentReference documentRef = FirebaseFirestore.instance
+          .collection('Users')
+          .doc(currentUser22!.email!.split('@')[0].toString());
 
-    try {
-      biocontroller.clear();
-      await documentRef.update({
-        'bio': bio,
-      }).whenComplete(() => Navigator.pop(context));
-      print('Document successfully updated');
-    } catch (e) {
-      print('Error updating document: $e');
+      // Update specific fields in the document
+
+      try {
+        biocontroller.clear();
+        await documentRef.update({
+          'bio': bio,
+          'instagram': insta,
+          'linkedin': link
+        }).whenComplete(() => Navigator.pop(context));
+        print('Document successfully updated');
+      } catch (e) {
+        print('Error updating document: $e');
+      }
     }
   }
 
@@ -143,7 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
         context: context,
         builder: (context) {
-          return SpinKitWanderingCubes(
+          return const SpinKitWanderingCubes(
             color: Colors.black,
             size: 50,
           );
@@ -171,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
         context: context,
         builder: (context) {
-          return Center(
+          return const Center(
             child: SpinKitWanderingCubes(
               color: Colors.orange,
               size: 50,
@@ -218,12 +253,14 @@ class _ProfilePageState extends State<ProfilePage> {
   String cur_url = '';
   final biocontroller = TextEditingController();
   void showUpdateProfile() {
-    showAdaptiveDialog(
+    showDialog(
         context: context,
         builder: (context) {
+          final h = MediaQuery.of(context).size.height;
+          final w = MediaQuery.of(context).size.width;
           return SafeArea(
             child: Scaffold(
-              backgroundColor: Colors.orange.shade50,
+              backgroundColor: Colors.white,
               appBar: AppBar(
                 title: Text(
                   'EDIT PROFILE',
@@ -238,7 +275,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.pop(context);
                       biocontroller.clear();
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.close,
                       color: Colors.red,
                     )),
@@ -246,116 +283,187 @@ class _ProfilePageState extends State<ProfilePage> {
                   IconButton(
                     onPressed: () async {
                       if (biocontroller.text.isNotEmpty) {
-                        update(biocontroller.text);
+                        update(biocontroller.text, _linked.text, _insta.text);
                       } else {
                         Navigator.pop(context);
                       }
                     },
-                    icon: Icon(Icons.check),
+                    icon: const Icon(Icons.check),
                     color: Colors.green,
                   )
                 ],
               ),
               body: Container(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(
-                      height: 35,
-                    ),
-                    CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(cur_url == '' ? user.imgUrl : cur_url),
-                      radius: 100,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        imagePick();
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.orange.shade200,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.black),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Text(
-                            'Change Photo',
-                            style: GoogleFonts.ubuntu(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                color: Colors.orange.shade100,
+                width: MediaQuery.sizeOf(context).width * 1,
+                // height: 500,
+                height: MediaQuery.of(context).size.height,
+
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Column(
+                    // mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      const SizedBox(
+                        height: 35,
+                      ),
+                      CircleAvatar(
+                        backgroundImage:
+                            NetworkImage(cur_url == '' ? user.imgUrl : cur_url),
+                        radius: 70,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          imagePick();
+                        },
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade200,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.black),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              'Change Photo',
+                              style: GoogleFonts.ubuntu(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Expanded(
-                        child: Container(
-                      margin: EdgeInsets.only(top: 5),
-                      decoration: BoxDecoration(
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        constraints: BoxConstraints.loose(Size(w, h * 0.65)),
+                        // margin: const EdgeInsets.only(top: 5),
+                        decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
                               topRight: Radius.circular(20)),
-                          boxShadow: [
-                            BoxShadow(
-                                offset: Offset(0, 3),
-                                blurRadius: 2,
-                                spreadRadius: 3)
-                          ]),
-                      child: SingleChildScrollView(
-                        physics: BouncingScrollPhysics(),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ListTile(
-                              title: Text(
-                                'Bio',
-                                style: GoogleFonts.ubuntu(
-                                    fontSize: 17, fontWeight: FontWeight.w700),
-                              ),
-                              contentPadding: EdgeInsets.all(30),
-                              subtitle: TextField(
-                                controller: biocontroller,
-                                maxLines: 10,
-                                decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(),
-                                  focusedBorder: OutlineInputBorder(),
-                                  hintText: user.bio,
-                                  hintStyle: TextStyle(fontSize: 14),
+                        ),
+                        child: Card(
+                          child: Column(
+                            // direction: Axis.vertical,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Bio',
+                                      style: GoogleFonts.ubuntu(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            GestureDetector(
-                              onTap: () => _auth
-                                  .sendPasswordResetEmail(email: user.email)
-                                  .whenComplete(() =>
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text('Mail sent to ' +
-                                                  "${user.email}")))),
-                              child: Text(
-                                'Get Password Reset link',
-                                style: GoogleFonts.ubuntu(
-                                    fontSize: 15, color: Colors.grey),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: TextField(
+                                  controller: biocontroller,
+                                  decoration: InputDecoration(
+                                    enabledBorder: const OutlineInputBorder(),
+                                    focusedBorder: const OutlineInputBorder(),
+                                    hintText: user.bio,
+                                    hintStyle: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
                               ),
-                            )
-                          ],
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Update your instagram url',
+                                      style: GoogleFonts.ubuntu(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: TextField(
+                                  controller: _insta,
+                                  decoration: InputDecoration(
+                                    enabledBorder: const OutlineInputBorder(),
+                                    focusedBorder: const OutlineInputBorder(),
+                                    hintText: 'Instagram Handle',
+                                    hintStyle: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'update your LinkedIn url',
+                                      style: GoogleFonts.ubuntu(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: TextField(
+                                  controller: _linked,
+                                  decoration: InputDecoration(
+                                    enabledBorder: const OutlineInputBorder(),
+                                    focusedBorder: const OutlineInputBorder(),
+                                    hintText: 'LinkedIn',
+                                    hintStyle: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                height: 100,
+                                child: GestureDetector(
+                                  onTap: () => _auth
+                                      .sendPasswordResetEmail(email: user.email)
+                                      .whenComplete(() =>
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Mail sent to ' +
+                                                          "${user.email}")))),
+                                  child: Text(
+                                    'Get Password Reset link',
+                                    style: GoogleFonts.ubuntu(
+                                        fontSize: 15, color: Colors.grey),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    )),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -363,8 +471,14 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  UserModel user =
-      UserModel(bio: '', email: '', username: '', uid: '', imgUrl: '');
+  UserModel user = UserModel(
+      bio: '',
+      email: '',
+      username: '',
+      uid: '',
+      imgUrl: '',
+      instagram: '',
+      linkedin: '');
 
   final currentUser = FirebaseAuth.instance.currentUser;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -396,17 +510,17 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               itemBuilder: (context) {
                 return [
-                  PopupMenuItem<String>(
+                  const PopupMenuItem<String>(
                     value: 'update',
                     child: Text('Update Profile'),
                   ),
-                  PopupMenuItem<String>(
+                  const PopupMenuItem<String>(
                     value: 'logout',
                     child: Text('Logout'),
                   ),
                 ];
               },
-              icon: Icon(Icons.menu),
+              icon: const Icon(Icons.menu),
             )
           ],
 
@@ -425,116 +539,136 @@ class _ProfilePageState extends State<ProfilePage> {
               user = UserModel.fromJson(
                   snapshot.data!.data() as Map<String, dynamic>);
 
-              return SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                child: Container(
-                  height: h * 0.8,
-                  width: w,
-                  color: Colors.grey.shade100,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: h * 0.03),
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return Container(
-                                      child: Center(
-                                        child: CircleAvatar(
-                                          radius: h * 0.2,
-                                          backgroundImage: NetworkImage(
-                                              userdata.imgUrl.toString()),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: CircleAvatar(
-                                radius: h * .09,
-                                backgroundImage:
-                                    NetworkImage(userdata.imgUrl.toString()),
-                                backgroundColor: Colors.white,
-                                // child: Icon(Icons.person),
-                              ),
-                            ),
-                            SizedBox(
-                              height: h * 0.02,
-                            ),
-                            Text(
-                              userdata.email.split('@')[0].toString(),
-                              style: GoogleFonts.ubuntu(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: h * 0.036),
-                            ),
-                            SizedBox(
-                              height: h * 0.01,
-                            ),
-                            Text(
-                              userdata.email,
-                              style: GoogleFonts.ubuntu(
-                                  color: Colors.grey.shade700),
-                            ),
-                            SizedBox(
-                              height: h * 0.01,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            // icon: Icon(Icons.edit)),
-                            Column(children: [
-                              Text(
-                                'Bio',
-                                style: GoogleFonts.ubuntu(
-                                    fontSize: 20, color: Colors.grey.shade600),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.grey.shade400),
-                                    borderRadius: BorderRadius.circular(10)),
-                                alignment: Alignment.center,
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: h * 0.04),
-                                width: w * 0.85,
-                                height: h * 0.2,
-                                child: Expanded(
-                                  child: Text(
-                                    userdata.bio,
-                                    style:
-                                        GoogleFonts.ubuntu(color: Colors.grey),
-                                    maxLines: null,
-                                  ),
-                                ),
-                              ),
-                            ]),
-                          ],
-                        ),
+              return Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      // ignore: sort_child_properties_last
+                      // margin: EdgeInsets.only(top: 20),
+
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(),
+                        image: DecorationImage(
+                            image: NetworkImage(userdata.imgUrl.toString()),
+                            fit: BoxFit.cover),
                       ),
-                      SizedBox(
-                        height: h * 0.02,
-                      ),
-                      SizedBox(
-                        height: h * 0.02,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  Container(
+                    height: h * 0.4,
+                    width: w,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.only(),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 5,
+                            spreadRadius: 2,
+                          )
+                        ]),
+                    child: Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(right: 2),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    blurRadius: 5,
+                                    spreadRadius: 1,
+                                    color: Colors.grey.shade600)
+                              ]),
+                          width: w * 0.3,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                  height: 50,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Connect',
+                                    style: GoogleFonts.ubuntu(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700),
+                                  )),
+                              Divider(),
+                              GestureDetector(
+                                onTap: () {
+                                  print('instagram');
+                                  if (userdata.instagram == '') {
+                                    Snack().show(
+                                        "Seems like User haven't provided Instagram Link",
+                                        context);
+                                  } else {
+                                    Uri uri = Uri.parse(
+                                        'https://www.' + userdata.instagram);
+                                    print(userdata.instagram);
+                                    _launchInBrowser(uri);
+                                  }
+                                },
+                                child: Container(
+                                    width: w * 0.25,
+                                    child:
+                                        Image.asset('assets/954290_2227.jpg')),
+                              ),
+                              SizedBox(
+                                height: h * 0.05,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  print('linkedin');
+                                  if (userdata.linkedin == '') {
+                                    Snack().show(
+                                        "Seems like User haven't provided LinkedIn Link",
+                                        context);
+                                  } else {
+                                    Uri uri = Uri.parse(
+                                        'https://www.' + userdata.linkedin);
+                                    print(uri);
+                                    _launchInBrowser(uri);
+                                  }
+                                },
+                                child: Container(
+                                    width: w * 0.25,
+                                    child: SvgPicture.network(
+                                        'https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg')),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userdata.email.split('@')[0].toString(),
+                                style: GoogleFonts.ubuntu(
+                                    fontSize: 22, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: h * 0.03,
+                              ),
+                              Text(userdata.email..toString(),
+                                  style: GoogleFonts.ubuntu(
+                                      color: Colors.grey.shade700)),
+                              Text(userdata.bio,
+                                  style: GoogleFonts.ubuntu(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade500))
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               );
             } else {
-              return SpinKitFoldingCube();
+              return SpinKitFoldingCube(
+                color: Colors.black12,
+                size: 50,
+              );
             }
           },
         ));

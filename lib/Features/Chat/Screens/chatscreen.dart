@@ -85,9 +85,18 @@ class _ChatscreenState extends State<Chatscreen> {
           email: userData['email'],
           username: userData['username'],
           uid: userData['uid'],
-          imgUrl: imageUrl.toString());
+          imgUrl: imageUrl.toString(),
+          instagram: userData['instagram'],
+          linkedin: userData['linkedin']);
     }
-    return UserModel(bio: 'bio', email: '', username: '', uid: '', imgUrl: '');
+    return UserModel(
+        bio: 'bio',
+        email: '',
+        username: '',
+        uid: '',
+        imgUrl: '',
+        linkedin: '',
+        instagram: '');
   }
 
   @override
@@ -106,7 +115,7 @@ class _ChatscreenState extends State<Chatscreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                UserProfilePage(userModel: value))));
+                                UserProfilePage(usermodel: value))));
                   },
                   onLongPress: () {
                     showDialog(

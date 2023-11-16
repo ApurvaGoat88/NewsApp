@@ -66,7 +66,9 @@ class _SignUpPageState extends State<SignUpPage> {
             "uid": user.uid,
             "email": user.email,
             "bio": "",
-            'imgUrl': user.photoURL.toString()
+            'imgUrl': user.photoURL.toString(),
+            'instagram': '',
+            'linkedin': ''
           });
         } catch (e) {
           print('$e');
@@ -392,7 +394,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                       email: _email.text,
                                       uid: '',
                                       username: _name.text,
-                                      imgUrl: imgUrl));
+                                      imgUrl: imgUrl,
+                                      linkedin: '',
+                                      instagram: ''));
                               if (user != null) {
                                 Navigator.pushReplacement(
                                     context,
@@ -434,15 +438,17 @@ class _SignUpPageState extends State<SignUpPage> {
                       InkWell(
                           onTap: () async {
                             await _handleGoogleSignIn(UserModel(
-                              bio: '',
-                              email: '',
-                              uid: '',
-                              username: _name.text,
-                              imgUrl: '',
-                            )).then((value) => Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RootPage())));
+                                    bio: '',
+                                    email: '',
+                                    uid: '',
+                                    username: _name.text,
+                                    imgUrl: '',
+                                    instagram: '',
+                                    linkedin: ''))
+                                .then((value) => Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => RootPage())));
                           },
                           child: Container(
                             decoration: BoxDecoration(

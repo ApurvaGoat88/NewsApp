@@ -20,7 +20,7 @@ class StartPage extends StatefulWidget {
 }
 
 class _StartPageState extends State<StartPage> {
-   Future<String?> getImageUrlForUser() async {
+  Future<String?> getImageUrlForUser() async {
     final em = FirebaseAuth.instance.currentUser!.email.toString();
 
     final userSnapshot = await FirebaseFirestore.instance
@@ -39,6 +39,7 @@ class _StartPageState extends State<StartPage> {
       return null;
     }
   }
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -52,8 +53,8 @@ class _StartPageState extends State<StartPage> {
         elevation: 1,
         centerTitle: true,
         title: Text(
-          'News Today',
-          style: GoogleFonts.poppins(
+          'Flash News',
+          style: GoogleFonts.ubuntu(
               fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
@@ -124,7 +125,7 @@ class _StartPageState extends State<StartPage> {
                                     if (snapshot.hasData) {
                                       return RootPage();
                                     } else {
-                                      return SignUpPage();
+                                      return LoginPage();
                                     }
                                   },
                                 ));

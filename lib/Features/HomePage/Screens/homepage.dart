@@ -13,6 +13,7 @@ import 'package:news_project/Features/HomePage/Screens/Astrolist.dart';
 import 'package:news_project/Features/News%20Page/Screens/new_screen.dart';
 import 'package:news_project/Features/HomePage/Screens/list_env.dart';
 import 'package:news_project/Features/HomePage/Screens/listview.dart';
+import 'package:news_project/common/snackbar.dart';
 // import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:news_project/model/CommentsModel.dart';
 import 'package:news_project/model/news_model.dart';
@@ -170,27 +171,24 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                 child: Container(
                                   width: w,
                                   alignment: Alignment.centerLeft,
-                                  child: Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: RichText(
-                                        text: TextSpan(
-                                            text:
-                                                value[index]['user'].toString(),
-                                            children: [
-                                              TextSpan(
-                                                text: "  " +
-                                                    value[index]['comment'],
-                                                style: GoogleFonts.ubuntu(
-                                                    color: Colors.grey.shade700,
-                                                    fontSize: 15),
-                                              )
-                                            ],
-                                            style: GoogleFonts.ubuntu(
-                                                color: Colors.black,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold)),
-                                      ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: RichText(
+                                      text: TextSpan(
+                                          text: value[index]['user'].toString(),
+                                          children: [
+                                            TextSpan(
+                                              text: "  " +
+                                                  value[index]['comment'],
+                                              style: GoogleFonts.ubuntu(
+                                                  color: Colors.grey.shade700,
+                                                  fontSize: 15),
+                                            )
+                                          ],
+                                          style: GoogleFonts.ubuntu(
+                                              color: Colors.black,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
                                     ),
                                   ),
                                 ),
@@ -396,13 +394,12 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                               ChatService().sendMessage(
                                                   data['uid'], '', '', news);
                                               Navigator.pop(context);
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                      content: Text('Sent to ' +
-                                                          data['email']
-                                                              .toString()
-                                                              .split('@')[0]
-                                                              .toString())));
+                                              Snack().show(
+                                                  'Sent to ' +
+                                                      data['email']
+                                                          .toString()
+                                                          .split('@')[0],
+                                                  context);
                                             },
                                             child: Padding(
                                               padding:
