@@ -9,6 +9,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_project/Features/LoginPage/Screens/LoginPage.dart';
 import 'package:news_project/Features/HomePage/Screens/homepage.dart';
 import 'package:news_project/Features/HomePage/Screens/navbar.dart';
+import 'package:news_project/Features/LoginPage/Screens/SignupAnimation.dart';
+import 'package:news_project/Features/LoginPage/Screens/Thankyou.dart';
 import 'package:news_project/common/firebaseErrorHandling.dart';
 import 'package:news_project/common/snackbar.dart';
 import 'package:news_project/model/UserModel.dart';
@@ -33,6 +35,19 @@ class _SignUpPageState extends State<SignUpPage> {
   final _name = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  void thankyou() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(title: Thankyou());
+      },
+    );
+
+    // Close dialog after 4 seconds
+    Future.delayed(Duration(seconds: 3), () {
+      Navigator.of(context).pop();
+    });
+  }
 
   Future<User?> _handleGoogleSignIn(UserModel usermodel) async {
     showDialog(
@@ -167,6 +182,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ErrorHandling().getMessageFromErrorCode(e.toString()), context);
       } finally {
         Navigator.pop(context);
+        // thankyou();
       }
     }
   }
@@ -175,6 +191,10 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
     final h = MediaQuery.sizeOf(context).height;
+    snackbar(String text) {
+      Snack().show(text, context);
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFFA800F),
       body: SingleChildScrollView(
@@ -197,16 +217,22 @@ class _SignUpPageState extends State<SignUpPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: h * 0.02),
-                        child: Container(
-                          child: Text(
-                            'Create New Account',
-                            style: GoogleFonts.openSans(
-                                fontSize: h * 0.04,
-                                fontWeight: FontWeight.bold,
-                                color: orange),
-                          ),
+                        height: h * 0.2,
+                        width: w,
+                        child: SignUpAnimation(),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        child: Text(
+                          'Create New Account',
+                          style: GoogleFonts.ubuntu(
+                              fontSize: 23,
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold),
                         ),
+                      ),
+                      SizedBox(
+                        width: w * 0.3,
                       ),
                       GestureDetector(
                         onTap: () async {
@@ -263,9 +289,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             if (text == null ||
                                 text.isEmpty ||
                                 !text.contains('@')) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Enter a Valid Email')));
+                              snackbar('Enter a Valid Email');
                               return '';
                             } else {
                               return null;
@@ -298,10 +322,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             if (text == null ||
                                 text.isEmpty ||
                                 text.length <= 6) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Password must be more than 6 letters')));
+                              snackbar('Password must be more than 6 letters');
                               return '';
                             } else {
                               return null;
@@ -342,10 +363,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             if (text == null ||
                                 text.isEmpty ||
                                 text.length <= 6) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Password must be more than 6 letters')));
+                              snackbar('Password must be more than 6 letters');
                               return '';
                             } else {
                               return null;
@@ -384,8 +402,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ElevatedButton(
                         onPressed: () async {
                           if (imgUrl.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text("Waiting for image to upload")));
+                            Snack().show('Please, Upload an Image', context);
                           } else {
                             if (_cpass.text == _pass.text) {
                               var user = await _registerWithEmailAndPassword(
@@ -397,6 +414,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                       imgUrl: imgUrl,
                                       linkedin: '',
                                       instagram: ''));
+                              await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(title: Thankyou());
+                                },
+                              ).then((value) {
+                                Future.delayed(Duration(seconds: 3), () {
+                                  Navigator.of(context).pop();
+                                });
+                              });
+
+                              // Close dialog after 4 seconds
+
                               if (user != null) {
                                 Navigator.pushReplacement(
                                     context,
@@ -404,9 +434,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                         builder: (context) => RootPage()));
                               } else {}
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('Passwords is not Same')));
+                              snackbar("Password doesn't Match");
                             }
                           }
                         },

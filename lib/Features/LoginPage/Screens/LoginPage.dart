@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_project/Features/LoginPage/Screens/SignUpPage.dart';
 // import 'package:news_project/Features/HomePage/Screens/homepage.dart';
 import 'package:news_project/Features/HomePage/Screens/navbar.dart';
+import 'package:news_project/Features/LoginPage/Screens/welcomeAnimation.dart';
 import 'package:news_project/common/firebaseErrorHandling.dart';
 import 'package:news_project/common/snackbar.dart';
 import 'package:news_project/model/UserModel.dart';
@@ -148,14 +149,19 @@ class _LoginPageState extends State<LoginPage> {
                       Container(
                         margin: EdgeInsets.symmetric(vertical: h * 0.02),
                         child: Container(
-                          child: Text(
-                            'Welcome Back',
-                            style: GoogleFonts.openSans(
-                                fontSize: h * 0.04,
-                                fontWeight: FontWeight.bold,
-                                color: orange),
-                          ),
+                            height: h * 0.2, child: WelcomeAnimation()),
+                      ),
+                      Container(
+                        child: Text(
+                          'Welcome Back',
+                          style: GoogleFonts.openSans(
+                              fontSize: h * 0.04,
+                              fontWeight: FontWeight.bold,
+                              color: orange),
                         ),
+                      ),
+                      SizedBox(
+                        height: h * 0.05,
                       ),
                       TextFormField(
                           validator: (text) {

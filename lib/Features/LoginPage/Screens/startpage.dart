@@ -125,7 +125,7 @@ class _StartPageState extends State<StartPage> {
                                     if (snapshot.hasData) {
                                       return RootPage();
                                     } else {
-                                      return LoginPage();
+                                      return SignUpPage();
                                     }
                                   },
                                 ));
