@@ -343,123 +343,122 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 20,
                       ),
                       Container(
-                        constraints: BoxConstraints.loose(Size(w, h * 0.65)),
-                        // margin: const EdgeInsets.only(top: 5),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20)),
-                        ),
-                        child: Card(
-                          child: Column(
-                            // direction: Axis.vertical,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Bio',
-                                      style: GoogleFonts.ubuntu(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextField(
-                                  controller: biocontroller,
-                                  decoration: InputDecoration(
-                                    enabledBorder: const OutlineInputBorder(),
-                                    focusedBorder: const OutlineInputBorder(),
-                                    hintText: user.bio,
-                                    hintStyle: const TextStyle(fontSize: 14),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Update your instagram url',
-                                      style: GoogleFonts.ubuntu(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextField(
-                                  controller: _insta,
-                                  decoration: InputDecoration(
-                                    enabledBorder: const OutlineInputBorder(),
-                                    focusedBorder: const OutlineInputBorder(),
-                                    hintText: 'Instagram Handle',
-                                    hintStyle: const TextStyle(fontSize: 14),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'update your LinkedIn url',
-                                      style: GoogleFonts.ubuntu(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextField(
-                                  controller: _linked,
-                                  decoration: InputDecoration(
-                                    enabledBorder: const OutlineInputBorder(),
-                                    focusedBorder: const OutlineInputBorder(),
-                                    hintText: 'LinkedIn',
-                                    hintStyle: const TextStyle(fontSize: 14),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Container(
-                                height: 100,
-                                child: GestureDetector(
-                                  onTap: () => _auth
-                                      .sendPasswordResetEmail(email: user.email)
-                                      .whenComplete(() =>
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(
-                                                      'Mail sent to ' +
-                                                          "${user.email}")))),
-                                  child: Text(
-                                    'Get Password Reset link',
-                                    style: GoogleFonts.ubuntu(
-                                        fontSize: 15, color: Colors.grey),
-                                  ),
-                                ),
+                        margin: const EdgeInsets.only(top: 5),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.shade400,
+                                blurRadius: 5,
                               )
-                            ],
-                          ),
+                            ]),
+                        child: Column(
+                          // direction: Axis.vertical,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Bio',
+                                    style: GoogleFonts.ubuntu(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: TextField(
+                                controller: biocontroller,
+                                decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(),
+                                  focusedBorder: const OutlineInputBorder(),
+                                  hintText: user.bio,
+                                  hintStyle: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Update your instagram url',
+                                    style: GoogleFonts.ubuntu(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: TextField(
+                                controller: _insta,
+                                decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(),
+                                  focusedBorder: const OutlineInputBorder(),
+                                  hintText: 'Instagram Handle',
+                                  hintStyle: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'update your LinkedIn url',
+                                    style: GoogleFonts.ubuntu(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: TextField(
+                                controller: _linked,
+                                decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(),
+                                  focusedBorder: const OutlineInputBorder(),
+                                  hintText: 'LinkedIn',
+                                  hintStyle: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              height: 100,
+                              child: GestureDetector(
+                                onTap: () => _auth
+                                    .sendPasswordResetEmail(email: user.email)
+                                    .whenComplete(() => Snack().show(
+                                        "Password reset link sent to ${user.email}",
+                                        context)),
+                                child: Text(
+                                  'Get Password Reset link',
+                                  style: GoogleFonts.ubuntu(
+                                      fontSize: 15, color: Colors.grey),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ],
@@ -608,8 +607,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 },
                                 child: Container(
                                     width: w * 0.25,
-                                    child:
-                                        Image.asset('assets/954290_2227.jpg')),
+                                    height: w * 0.2,
+                                    child: SvgPicture.network(
+                                        'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg')),
                               ),
                               SizedBox(
                                 height: h * 0.05,
@@ -629,7 +629,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   }
                                 },
                                 child: Container(
-                                    width: w * 0.25,
+                                    width: w * 0.2,
+                                    height: w * 0.2,
                                     child: SvgPicture.network(
                                         'https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg')),
                               ),

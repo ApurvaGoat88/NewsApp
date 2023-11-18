@@ -74,10 +74,11 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
       value.add({'comment': comments, 'user': user});
       print(value);
       CommentsModel commentsModel = CommentsModel(comments: value);
-      FirebaseFirestore.instance.collection('Comments').doc(id.toString()).set({
-        'comments': value
-      }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Comment added, Please refreash'))));
+      FirebaseFirestore.instance
+          .collection('Comments')
+          .doc(id.toString())
+          .set({'comments': value}).then(
+              (value) => Snack().show("Comment added successfully", context));
 
       print('done');
     });
@@ -89,8 +90,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
       'comments': [
         {'comment': comments, 'user': user}
       ]
-    }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Comment added, Please refresh'))));
+    }).then((value) => Snack().show("Comment added successfully", context));
   }
 
   Future<bool> doesDocumentExist(int? id) async {
@@ -151,51 +151,54 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                     const Divider(
                       color: Colors.black,
                     ),
-                    Container(
-                        // color: Colors.red,
-                        height: h * 0.42,
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: value.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border:
-                                      Border.all(color: Colors.grey.shade200),
-                                  borderRadius: BorderRadius.circular(5)),
-                              width: w,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: w * 0.05, vertical: h * 0.02),
-                                child: Container(
-                                  width: w,
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: RichText(
-                                      text: TextSpan(
-                                          text: value[index]['user'].toString(),
-                                          children: [
-                                            TextSpan(
-                                              text: "  " +
-                                                  value[index]['comment'],
-                                              style: GoogleFonts.ubuntu(
-                                                  color: Colors.grey.shade700,
-                                                  fontSize: 15),
-                                            )
-                                          ],
-                                          style: GoogleFonts.ubuntu(
-                                              color: Colors.black,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold)),
+                    Expanded(
+                      child: Container(
+                          // color: Colors.red,
+                          height: h * 0.42,
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: value.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border:
+                                        Border.all(color: Colors.grey.shade200),
+                                    borderRadius: BorderRadius.circular(5)),
+                                width: w,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: w * 0.05, vertical: h * 0.02),
+                                  child: Container(
+                                    width: w,
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: RichText(
+                                        text: TextSpan(
+                                            text:
+                                                value[index]['user'].toString(),
+                                            children: [
+                                              TextSpan(
+                                                text: "  " +
+                                                    value[index]['comment'],
+                                                style: GoogleFonts.ubuntu(
+                                                    color: Colors.grey.shade700,
+                                                    fontSize: 15),
+                                              )
+                                            ],
+                                            style: GoogleFonts.ubuntu(
+                                                color: Colors.black,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold)),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        )),
+                              );
+                            },
+                          )),
+                    ),
                     const Divider(
                       color: Colors.black,
                     ),
@@ -252,15 +255,17 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                   const Divider(
                     color: Colors.black,
                   ),
-                  Container(
-                      // color: Colors.red,
-                      height: h * 0.42,
-                      child: Center(
-                        child: Text(
-                          "Become First to add comment ",
-                          style: GoogleFonts.ubuntu(fontSize: 20),
-                        ),
-                      )),
+                  Expanded(
+                    child: Container(
+                        // color: Colors.red,
+                        height: h * 0.42,
+                        child: Center(
+                          child: Text(
+                            "Become First to add comment ",
+                            style: GoogleFonts.ubuntu(fontSize: 20),
+                          ),
+                        )),
+                  ),
                   const Divider(
                     color: Colors.black,
                   ),
@@ -339,7 +344,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                           final data = e.data()! as Map<String, dynamic>;
                           if (data['email'] != userEmail) {
                             return Container(
-                              height: h * 0.12,
+                              height: 115,
                               width: w,
                               child: Column(
                                 mainAxisAlignment:

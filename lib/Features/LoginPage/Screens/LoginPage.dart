@@ -90,8 +90,7 @@ class _LoginPageState extends State<LoginPage> {
         return user;
       }
     } on FirebaseAuthException catch (error) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error.toString())));
+      Snack().show("Something went wrong", context);
     } finally {
       Navigator.pop(context);
     }
@@ -161,16 +160,14 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       SizedBox(
-                        height: h * 0.05,
+                        height: h * 0.01,
                       ),
                       TextFormField(
                           validator: (text) {
                             if (text == null ||
                                 text.isEmpty ||
                                 text.contains('@') == false) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Enter a Valid Email')));
+                              Snack().show("Enter a Valid Email", context);
                               return 'Email is Not Valid ';
                             }
                             return null;
@@ -204,10 +201,9 @@ class _LoginPageState extends State<LoginPage> {
                             if (text == null ||
                                 text.isEmpty ||
                                 text.length <= 6) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Password must be more than 6 letters')));
+                              Snack().show(
+                                  "Password must be more than 6 letters",
+                                  context);
                               return 'Password Error';
                             } else {
                               return null;
@@ -251,16 +247,11 @@ class _LoginPageState extends State<LoginPage> {
                                   await _auth
                                       .sendPasswordResetEmail(
                                           email: _email.text)
-                                      .whenComplete(() => ScaffoldMessenger.of(
-                                              context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  "Password reset link sent to ${_email.text}"))));
+                                      .whenComplete(() => Snack().show(
+                                          "Password reset link sent to ${_email.text}",
+                                          context));
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text("Enter a Valid mail ")));
+                                  Snack().show("Enter a Valid Email", context);
                                 }
                               },
                               child: Text(

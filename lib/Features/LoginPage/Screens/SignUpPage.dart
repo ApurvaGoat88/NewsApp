@@ -50,12 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<User?> _handleGoogleSignIn(UserModel usermodel) async {
-    showDialog(
-        context: context,
-        builder: ((context) => SpinKitWanderingCubes(
-              color: Colors.black,
-              size: 50,
-            )));
+    User? user;
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -68,10 +63,17 @@ class _SignUpPageState extends State<SignUpPage> {
         );
 
         // Sign in to Firebase with the Google credentials
+        showDialog(
+            context: context,
+            builder: ((context) => SpinKitWanderingCubes(
+                  color: Colors.black,
+                  size: 50,
+                )));
         final UserCredential authResult =
             await FirebaseAuth.instance.signInWithCredential(credential);
-        final User? user = authResult.user;
+        user = authResult.user;
         print('User signed in with Google: ${user!.displayName}');
+        Navigator.pop(context);
         try {
           await FirebaseFirestore.instance
               .collection("Users")
@@ -89,13 +91,12 @@ class _SignUpPageState extends State<SignUpPage> {
           print('$e');
         }
       }
+      return user;
     } on FirebaseAuthException catch (e) {
       print(e);
       Snack()
           .show(ErrorHandling().getMessageFromErrorCode(e.toString()), context);
-    } finally {
-      Navigator.pop(context);
-    }
+    } finally {}
   }
 
   // final _email = TextEditingController();
@@ -397,7 +398,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           maxLines: 1),
                       SizedBox(
-                        height: h * 0.02,
+                        height: h * 0.01,
                       ),
                       ElevatedButton(
                         onPressed: () async {
@@ -447,7 +448,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 borderRadius: BorderRadius.circular(24))),
                       ),
                       SizedBox(
-                        height: h * 0.02,
+                        height: h * 0.01,
                       ),
                       Row(children: <Widget>[
                         const Expanded(child: Divider()),
@@ -461,10 +462,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         const Expanded(child: Divider()),
                       ]),
                       SizedBox(
-                        height: h * 0.02,
+                        height: h * 0.01,
                       ),
                       InkWell(
                           onTap: () async {
+                            User? user;
                             await _handleGoogleSignIn(UserModel(
                                     bio: '',
                                     email: '',
@@ -473,10 +475,22 @@ class _SignUpPageState extends State<SignUpPage> {
                                     imgUrl: '',
                                     instagram: '',
                                     linkedin: ''))
-                                .then((value) => Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => RootPage())));
+                                .then((value) {
+                              user = value;
+                            });
+                            await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(title: Thankyou());
+                                });
+                            if (user != null) {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RootPage()));
+                            } else {
+                              print('error');
+                            }
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -509,7 +523,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           )),
                       SizedBox(
-                        height: h * 0.02,
+                        height: h * 0.01,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

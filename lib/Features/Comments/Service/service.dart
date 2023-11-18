@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:news_project/common/snackbar.dart';
 import 'package:news_project/model/CommentsModel.dart';
 
 class CommentService {
@@ -46,8 +47,7 @@ class CommentService {
       'comments': [
         {'comment': comments, 'user': user}
       ]
-    }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Comment added, Please refreash'))));
+    }).then((value) => Snack().show("Comment added Successfully", context));
   }
 
   Future<bool> doesDocumentExist(int? id) async {

@@ -432,12 +432,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 child: GestureDetector(
                                   onTap: () => _auth
                                       .sendPasswordResetEmail(email: user.email)
-                                      .whenComplete(() =>
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(
-                                                      'Mail sent to ' +
-                                                          "${user.email}")))),
+                                      .whenComplete(() => Snack().show(
+                                          'Password reset link sent to ${user.email}',
+                                          context)),
                                   child: Text(
                                     'Get Password Reset link',
                                     style: GoogleFonts.ubuntu(
@@ -557,21 +554,22 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               GestureDetector(
                                 onTap: () {
                                   print('instagram');
-                                  if (userd.instagram == '') {
+                                  if (userdata.instagram == '') {
                                     Snack().show(
                                         "Seems like User haven't provided Instagram Link",
                                         context);
                                   } else {
                                     Uri uri = Uri.parse(
-                                        'https://www.' + userd.instagram);
-                                    print(userd.instagram);
+                                        'https://www.' + userdata.instagram);
+                                    print(userdata.instagram);
                                     _launchInBrowser(uri);
                                   }
                                 },
                                 child: Container(
                                     width: w * 0.25,
-                                    child:
-                                        Image.asset('assets/954290_2227.jpg')),
+                                    height: w * 0.2,
+                                    child: SvgPicture.network(
+                                        'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg')),
                               ),
                               SizedBox(
                                 height: h * 0.05,
@@ -579,19 +577,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               GestureDetector(
                                 onTap: () {
                                   print('linkedin');
-                                  if (userd.linkedin == '') {
+                                  if (userdata.linkedin == '') {
                                     Snack().show(
                                         "Seems like User haven't provided LinkedIn Link",
                                         context);
                                   } else {
                                     Uri uri = Uri.parse(
-                                        'https://www.' + userd.linkedin);
+                                        'https://www.' + userdata.linkedin);
                                     print(uri);
                                     _launchInBrowser(uri);
                                   }
                                 },
                                 child: Container(
-                                    width: w * 0.25,
+                                    width: w * 0.2,
+                                    height: w * 0.2,
                                     child: SvgPicture.network(
                                         'https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg')),
                               ),
