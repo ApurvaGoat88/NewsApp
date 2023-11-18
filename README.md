@@ -36,10 +36,10 @@ Download Flash News today and embark on a journey where information transcends b
 ## ScreenShots 
 
 ### Start page
-![Alt text](Screenshot_1700296636.png)
+![Start Page](Screenshot_1700296636.png)
 ### Home page 
-![Alt text](Screenshot_1700296655.png)
+![Homepage](Screenshot_1700296655.png)
 ### Bookmarks
-![Alt text](Screenshot_1700296676.png)
+![bookmarks](Screenshot_1700296676.png)
 ### user profile 
-![Alt text](Screenshot_1700296688.png)
+![Profile page](Screenshot_1700296688.png)
