@@ -415,16 +415,12 @@ class _SignUpPageState extends State<SignUpPage> {
                                       imgUrl: imgUrl,
                                       linkedin: '',
                                       instagram: ''));
+
                               await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(title: Thankyou());
-                                },
-                              ).then((value) {
-                                Future.delayed(Duration(seconds: 3), () {
-                                  Navigator.of(context).pop();
-                                });
-                              });
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(title: Thankyou());
+                                  });
 
                               // Close dialog after 4 seconds
 
