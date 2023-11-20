@@ -208,7 +208,7 @@ class CommentService {
                       height: h * 0.42,
                       child: Center(
                         child: Text(
-                          "Become First to add comment ",
+                          "No Commets yet ",
                           style: GoogleFonts.ubuntu(fontSize: 20),
                         ),
                       )),

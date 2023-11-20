@@ -90,10 +90,12 @@ class _LoginPageState extends State<LoginPage> {
         return user;
       }
     } on FirebaseAuthException catch (error) {
+      print(error.code);
       Snack().show("Something went wrong", context);
     } finally {
       Navigator.pop(context);
     }
+    return null;
   }
 
   Future<User?> _signInWithEmailAndPassword() async {
@@ -113,6 +115,7 @@ class _LoginPageState extends State<LoginPage> {
             ErrorHandling().getMessageFromErrorCode(e.toString()), context);
       }
     }
+    return null;
   }
 
   // final _email = TextEditingController();
